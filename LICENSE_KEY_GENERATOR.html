@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Hours Tracker - License Key Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .quick-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .quick-btn {
+            padding: 8px 16px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .quick-btn:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .quick-btn.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-label {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .license-key {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #2d3748;
+            word-break: break-all;
+            border: 2px solid #e2e8f0;
+            margin-bottom: 15px;
+        }
+
+        .key-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #38a169;
+        }
+
+        .copy-btn.copied {
+            background: #2f855a;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #a0aec0;
+            font-size: 12px;
+        }
+
+        .warning {
+            background: #fff5f5;
+            border: 2px solid #feb2b2;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #742a2a;
+        }
+
+        .warning-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🔑</div>
+            <h1>License Key Generator</h1>
+            <p class="subtitle">Flight Hours Tracker - Admin Tool</p>
+        </div>
+
+        <form id="generatorForm">
+            <div class="form-group">
+                <label for="duration">License Duration (Days) *</label>
+                <input 
+                    type="number" 
+                    id="duration" 
+                    name="duration" 
+                    min="1" 
+                    max="3650" 
+                    required 
+                    placeholder="Enter number of days"
+                >
+                <div class="quick-select">
+                    <button type="button" class="quick-btn" data-days="7">7 Days</button>
+                    <button type="button" class="quick-btn" data-days="30">1 Month</button>
+                    <button type="button" class="quick-btn" data-days="90">3 Months</button>
+                    <button type="button" class="quick-btn" data-days="180">6 Months</button>
+                    <button type="button" class="quick-btn" data-days="365">1 Year</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username / Client Name (Optional)</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    placeholder="e.g., CAPT. JOHN DOE"
+                >
+            </div>
+
+            <button type="submit" class="generate-btn">
+                🔐 Generate License Key
+            </button>
+        </form>
+
+        <div id="result" class="result">
+            <div class="result-label">Generated License Key</div>
+            <div class="license-key" id="licenseKey"></div>
+            
+            <div class="key-info">
+                <div class="info-item">
+                    <div class="info-label">Duration</div>
+                    <div class="info-value" id="infoDuration"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Expires On</div>
+                    <div class="info-value" id="infoExpiration"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Username</div>
+                    <div class="info-value" id="infoUsername"></div>
+                </div>
+            </div>
+
+            <button id="copyBtn" class="copy-btn">
+                📋 Copy License Key
+            </button>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">⚠️ Security Warning</div>
+            <div>Keep this generator private. Anyone with access can create valid license keys.</div>
+        </div>
+
+        <div class="footer">
+            Flight Hours Tracker © 2026 - CAPT. ABEDALQADER GHUNMAT
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <script type="module">
+        // License Key Crypto Library (embedded)
+        const SECRET_KEY = "FHT_SECRET_2026_CHANGE_THIS_TO_YOUR_OWN_RANDOM_STRING_12345";
+
+        function stringToHex(str) {
+            let hex = "";
+            for (let i = 0; i < str.length; i++) {
+                hex += str.charCodeAt(i).toString(16).padStart(2, "0");
+            }
+            return hex;
+        }
+
+        function hexToString(hex) {
+            let str = "";
+            for (let i = 0; i < hex.length; i += 2) {
+                str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+            }
+            return str;
+        }
+
+        async function hmacSha256(message, key) {
+            // Use CryptoJS for HMAC-SHA256 (matches app implementation)
+            const hmac = CryptoJS.HmacSHA256(message, key);
+            const hashHex = hmac.toString(CryptoJS.enc.Hex);
+            return hashHex;
+        }
+
+        function base64Encode(str) {
+            // Direct btoa encoding (matches app implementation)
+            return btoa(str)
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_")
+                .replace(/=/g, "");
+        }
+
+        async function generateLicenseKey(durationDays, username = "") {
+            const now = new Date();
+            const expirationDate = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
+            const generatedAt = now.toISOString();
+            const expirationISO = expirationDate.toISOString();
+
+            const payload = `${expirationISO}|${username}|${generatedAt}`;
+            const payloadEncoded = base64Encode(payload);
+
+            const signature = await hmacSha256(payload, SECRET_KEY);
+            const signatureShort = signature.substring(0, 16);
+
+            const licenseKey = `FHT-${payloadEncoded}-${signatureShort}`;
+
+            return {
+                key: licenseKey,
+                expirationDate: expirationDate,
+                username: username || "N/A",
+                durationDays: durationDays
+            };
+        }
+
+        // UI Logic
+        const form = document.getElementById('generatorForm');
+        const durationInput = document.getElementById('duration');
+        const usernameInput = document.getElementById('username');
+        const resultDiv = document.getElementById('result');
+        const licenseKeyDiv = document.getElementById('licenseKey');
+        const copyBtn = document.getElementById('copyBtn');
+        const quickBtns = document.querySelectorAll('.quick-btn');
+
+        // Quick select buttons
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const days = btn.getAttribute('data-days');
+                durationInput.value = days;
+                
+                quickBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const duration = parseInt(durationInput.value);
+            const username = usernameInput.value.trim().toUpperCase();
+
+            if (duration < 1) {
+                alert('Duration must be at least 1 day');
+                return;
+            }
+
+            try {
+                const result = await generateLicenseKey(duration, username);
+
+                licenseKeyDiv.textContent = result.key;
+                document.getElementById('infoDuration').textContent = `${result.durationDays} days`;
+                document.getElementById('infoExpiration').textContent = result.expirationDate.toLocaleDateString();
+                document.getElementById('infoUsername').textContent = result.username;
+
+                resultDiv.classList.add('show');
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch (error) {
+                alert('Error generating license key: ' + error.message);
+            }
+        });
+
+        // Copy button
+        copyBtn.addEventListener('click', async () => {
+            const key = licenseKeyDiv.textContent;
+            
+            try {
+                await navigator.clipboard.writeText(key);
+                copyBtn.textContent = '✅ Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 Copy License Key';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (error) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = key;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                copyBtn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 Copy License Key';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
