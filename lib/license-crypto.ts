@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js';
 import { encode as base64EncodeLib, decode as base64DecodeLib } from 'base-64';
 
-const _k = "x9#Qm2@Lv8$Np5!Wr3^Tz6&Ys4*Kb7%Jc1~Hd0+Fg";
+const _k = "FHT_SECRET_2026_CHANGE_THIS_TO_YOUR_OWN_RANDOM_STRING_12345";
 
 /**
  * Convert string to hex
