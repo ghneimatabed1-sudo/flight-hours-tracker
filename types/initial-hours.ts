@@ -1,6 +1,6 @@
 /**
  * Initial Hours - Baseline flight hours entered manually before using the app
- * These hours are added to totals but do NOT affect currency/expiration calculations
+ * These hours are added to totals AND can affect currency calculations
  */
 export interface InitialHours {
   totalHours: number;
@@ -13,7 +13,7 @@ export interface InitialHours {
   dualDayHours: number;
   dualNightHours: number;
   dualNVGHours: number;
-  
+
   // Detailed breakdown for Day/Night/NVG
   day1stPlt: number;
   day2ndPlt: number;
@@ -21,6 +21,11 @@ export interface InitialHours {
   night2ndPlt: number;
   nvg1stPlt: number;
   nvg2ndPlt: number;
+
+  // Currency baseline dates - when was the last flight before using the app?
+  lastDayFlyingDate?: string; // ISO date string (e.g., "2024-01-15")
+  lastNightFlying?: "night" | "nvg"; // Was it night or NVG?
+  lastNightFlyingDate?: string; // ISO date string
 }
 
 export const DEFAULT_INITIAL_HOURS: InitialHours = {
@@ -40,4 +45,7 @@ export const DEFAULT_INITIAL_HOURS: InitialHours = {
   night2ndPlt: 0,
   nvg1stPlt: 0,
   nvg2ndPlt: 0,
+  lastDayFlyingDate: undefined,
+  lastNightFlying: undefined,
+  lastNightFlyingDate: undefined,
 };

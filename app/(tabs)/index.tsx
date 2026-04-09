@@ -3,6 +3,7 @@ import { ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { useSettings } from "@/lib/settings-context";
 import { useFlights } from "@/lib/flight-context";
+import { useInitialHours } from "@/lib/initial-hours-context";
 import { calculateAllCurrencyStatuses, type CurrencyStatus } from "@/lib/currency-calculator";
 import { rescheduleAllNotifications } from "@/lib/notifications";
 import { useEffect, useMemo } from "react";
@@ -11,6 +12,7 @@ import type { CurrencyType } from "@/types/currency";
 export default function HomeScreen() {
   const { settings, loading: settingsLoading } = useSettings();
   const { flights, loading: flightsLoading } = useFlights();
+  const { initialHours } = useInitialHours();
 
   const loading = settingsLoading || flightsLoading;
 
@@ -18,8 +20,8 @@ export default function HomeScreen() {
   // Use useMemo to avoid recalculating on every render
   const currencyStatuses = useMemo(() => {
     if (loading) return [];
-    return calculateAllCurrencyStatuses(settings.currencies, flights);
-  }, [settings.currencies, flights, loading]);
+    return calculateAllCurrencyStatuses(settings.currencies, flights, settings.dayCurrencyRefreshMode, initialHours);
+  }, [settings.currencies, flights, settings.dayCurrencyRefreshMode, initialHours, loading]);
 
   // Reschedule notifications when currency status or settings change
   // MUST be before any early returns (Rules of Hooks)
@@ -37,14 +39,11 @@ export default function HomeScreen() {
       reminderDaysMap[currency.type] = currency.reminderDays;
     });
 
-    // Convert array to record
-    const statusMap: Record<CurrencyType, CurrencyStatus> = {
-      day: currencyStatuses[0],
-      night: currencyStatuses[1],
-      nvg: currencyStatuses[2],
-      medical: currencyStatuses[3],
-      irt: currencyStatuses[4],
-    };
+    // Convert array to record using type names (not positions)
+    const statusMap: Record<CurrencyType, CurrencyStatus> = {};
+    currencyStatuses.forEach((status) => {
+      statusMap[status.type as CurrencyType] = status;
+    });
 
     rescheduleAllNotifications(statusMap);
   }, [currencyStatuses, settings.currencies, loading]);

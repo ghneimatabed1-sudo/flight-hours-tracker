@@ -80,7 +80,7 @@ async function getAndroidDeviceId(): Promise<string> {
   const Device = await import('expo-device');
   
   // Get Android ID (stable across reinstalls)
-  const androidId = Application.getAndroidId();
+  const androidId = await Application.getAndroidIdAsync();
   
   if (androidId) {
     // Use Android ID only - stable across Expo Go and standalone builds

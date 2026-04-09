@@ -5,6 +5,7 @@
 
 import type { Currency } from "@/types/currency";
 import type { Flight } from "@/types/flight";
+import type { InitialHours } from "@/types/initial-hours";
 
 export interface CurrencyStatus {
   type: string;
@@ -18,10 +19,14 @@ export interface CurrencyStatus {
 
 /**
  * Calculate currency status for a given currency type
+ * @param dayCurrencyRefreshMode - "day_flight_only" (any day flight) or "duration_half_hour" (day flights >= 0.5 hours only)
+ * @param initialHours - Initial hours with baseline dates for currency calculations
  */
 export function calculateCurrencyStatus(
   currency: Currency,
-  flights: Flight[]
+  flights: Flight[],
+  dayCurrencyRefreshMode: "day_flight_only" | "duration_half_hour" = "day_flight_only",
+  initialHours?: InitialHours
 ): CurrencyStatus {
   const name = getCurrencyName(currency.type);
   const isDateBased = currency.type === "medical"; // Only Medical is date-based now
@@ -73,7 +78,16 @@ export function calculateCurrencyStatus(
   const relevantFlights = flights.filter((flight) => {
     switch (currency.type) {
       case "day":
-        return flight.condition === "day";
+        // Day currency filtering with optional duration threshold
+        if (flight.condition !== "day") return false;
+
+        // If duration_half_hour mode: only count flights >= 0.5 hours
+        if (dayCurrencyRefreshMode === "duration_half_hour") {
+          return flight.flightTime >= 0.5;
+        }
+        // Otherwise: any day flight counts (default mode)
+        return true;
+
       case "night":
         return flight.condition === "night" && !flight.nvg;
       case "nvg":
@@ -85,21 +99,35 @@ export function calculateCurrencyStatus(
     }
   });
 
-  if (relevantFlights.length === 0) {
-    // No relevant flights, currency is expired
+  // Determine the most recent flight date (from flights OR initial hours)
+  let lastFlightDate: Date | null = null;
+
+  if (relevantFlights.length > 0) {
+    // Get the most recent logged flight
+    const sortedFlights = relevantFlights.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    lastFlightDate = new Date(sortedFlights[0].date);
+  } else if (initialHours) {
+    // Check initial hours baseline dates
+    if (currency.type === "day" && initialHours.lastDayFlyingDate) {
+      lastFlightDate = new Date(initialHours.lastDayFlyingDate);
+    } else if (currency.type === "night" && initialHours.lastNightFlying === "night" && initialHours.lastNightFlyingDate) {
+      lastFlightDate = new Date(initialHours.lastNightFlyingDate);
+    } else if (currency.type === "nvg" && initialHours.lastNightFlying === "nvg" && initialHours.lastNightFlyingDate) {
+      lastFlightDate = new Date(initialHours.lastNightFlyingDate);
+    }
+  }
+
+  if (!lastFlightDate) {
+    // No flights and no initial hours baseline, currency is expired
     return {
       type: currency.type,
       name,
-      daysRemaining: -999, // Arbitrary large negative number
+      daysRemaining: -999,
       status: "EXPIRED",
     };
   }
-
-  // Get the most recent flight date
-  const sortedFlights = relevantFlights.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-  const lastFlightDate = new Date(sortedFlights[0].date);
   
   // Calculate expiration date
   const expirationDate = new Date(lastFlightDate);
@@ -134,12 +162,16 @@ export function calculateCurrencyStatus(
 
 /**
  * Calculate all currency statuses
+ * @param dayCurrencyRefreshMode - "day_flight_only" (any day flight) or "duration_half_hour" (day flights >= 0.5 hours only)
+ * @param initialHours - Initial hours with baseline dates for currency calculations
  */
 export function calculateAllCurrencyStatuses(
   currencies: Currency[],
-  flights: Flight[]
+  flights: Flight[],
+  dayCurrencyRefreshMode: "day_flight_only" | "duration_half_hour" = "day_flight_only",
+  initialHours?: InitialHours
 ): CurrencyStatus[] {
-  return currencies.map((currency) => calculateCurrencyStatus(currency, flights));
+  return currencies.map((currency) => calculateCurrencyStatus(currency, flights, dayCurrencyRefreshMode, initialHours));
 }
 
 /**

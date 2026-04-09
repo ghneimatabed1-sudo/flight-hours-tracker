@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
+import { useThemeContext } from "@/lib/theme-provider";
 
 
 import { ScreenContainer } from "@/components/screen-container";
@@ -23,6 +24,7 @@ import { verifyLicenseKey, isLicenseExpired } from "@/lib/license-crypto";
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { setColorScheme } = useThemeContext();
   const { settings, loading, updateFlightName, updateCurrencies, updateTheme, updateDayCurrencyRefreshMode } = useSettings();
   const { integrityReport } = useFlights();
   const { initialHours, updateInitialHours } = useInitialHours();
@@ -50,7 +52,9 @@ export default function SettingsScreen() {
     setCurrencies(settings.currencies);
     setSelectedTheme(settings.theme);
     setSelectedDayMode(settings.dayCurrencyRefreshMode);
-  }, [settings]);
+    // Apply the saved theme
+    setColorScheme(settings.theme === "dark" ? "dark" : "light");
+  }, [settings, setColorScheme]);
 
   useEffect(() => {
     setTempInitialHours(initialHours);
@@ -202,6 +206,8 @@ export default function SettingsScreen() {
     try {
       await updateTheme(theme);
       setSelectedTheme(theme);
+      // Apply theme immediately
+      setColorScheme(theme === "dark" ? "dark" : "light");
       Alert.alert("Success", "Theme updated successfully!");
     } catch (error) {
       Alert.alert("Error", "Failed to update theme");
@@ -1110,7 +1116,103 @@ export default function SettingsScreen() {
                 autoCapitalize="characters"
                     />
                   </View>
+
+                  {/* Currency Baseline Dates */}
+                  <View className="border-t border-border pt-4 mt-4">
+                    <Text className="text-base font-semibold text-foreground mb-3">Currency Baseline Dates</Text>
+
+                    {/* Last Day Flying Date */}
+                    <View>
+                      <Text className="text-sm text-muted mb-1">When was your last day flying? (DD/MM/YYYY)</Text>
+                      <TextInput
+                        className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
+                        value={
+                          tempInitialHours.lastDayFlyingDate
+                            ? new Date(tempInitialHours.lastDayFlyingDate).toLocaleDateString("en-GB")
+                            : ""
+                        }
+                        onChangeText={(value) => {
+                          if (value === "") {
+                            setTempInitialHours({ ...tempInitialHours, lastDayFlyingDate: undefined });
+                          } else {
+                            // Parse DD/MM/YYYY format
+                            const parts = value.split("/");
+                            if (parts.length === 3) {
+                              const day = parseInt(parts[0], 10);
+                              const month = parseInt(parts[1], 10);
+                              const year = parseInt(parts[2], 10);
+                              if (day > 0 && day <= 31 && month > 0 && month <= 12 && year > 1900) {
+                                const date = new Date(year, month - 1, day);
+                                setTempInitialHours({ ...tempInitialHours, lastDayFlyingDate: date.toISOString().split("T")[0] });
+                              }
+                            }
+                          }
+                        }}
+                        placeholder="DD/MM/YYYY"
+                        placeholderTextColor="#9BA1A6"
+                      />
+                    </View>
+
+                    {/* Last Night/NVG Flying */}
+                    <View className="mt-3">
+                      <Text className="text-sm text-muted mb-2">When was your last night/NVG flying?</Text>
+
+                      {/* Night/NVG Toggle */}
+                      <View className="flex-row gap-2 mb-2">
+                        <TouchableOpacity
+                          className={`flex-1 py-2 rounded-lg border ${tempInitialHours.lastNightFlying === "night" ? "bg-primary border-primary" : "bg-background border-border"}`}
+                          onPress={() => {
+                            setTempInitialHours({ ...tempInitialHours, lastNightFlying: "night" });
+                          }}
+                        >
+                          <Text className={`text-center font-semibold ${tempInitialHours.lastNightFlying === "night" ? "text-background" : "text-foreground"}`}>
+                            Night
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          className={`flex-1 py-2 rounded-lg border ${tempInitialHours.lastNightFlying === "nvg" ? "bg-primary border-primary" : "bg-background border-border"}`}
+                          onPress={() => {
+                            setTempInitialHours({ ...tempInitialHours, lastNightFlying: "nvg" });
+                          }}
+                        >
+                          <Text className={`text-center font-semibold ${tempInitialHours.lastNightFlying === "nvg" ? "text-background" : "text-foreground"}`}>
+                            NVG
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      {/* Night/NVG Date Input */}
+                      <TextInput
+                        className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
+                        value={
+                          tempInitialHours.lastNightFlyingDate
+                            ? new Date(tempInitialHours.lastNightFlyingDate).toLocaleDateString("en-GB")
+                            : ""
+                        }
+                        onChangeText={(value) => {
+                          if (value === "") {
+                            setTempInitialHours({ ...tempInitialHours, lastNightFlyingDate: undefined });
+                          } else {
+                            // Parse DD/MM/YYYY format
+                            const parts = value.split("/");
+                            if (parts.length === 3) {
+                              const day = parseInt(parts[0], 10);
+                              const month = parseInt(parts[1], 10);
+                              const year = parseInt(parts[2], 10);
+                              if (day > 0 && day <= 31 && month > 0 && month <= 12 && year > 1900) {
+                                const date = new Date(year, month - 1, day);
+                                setTempInitialHours({ ...tempInitialHours, lastNightFlyingDate: date.toISOString().split("T")[0] });
+                              }
+                            }
+                          }
+                        }}
+                        placeholder="DD/MM/YYYY"
+                        placeholderTextColor="#9BA1A6"
+                      />
+                    </View>
+                  </View>
                 </View>
+
                 <View className="flex-row gap-3 mt-4">
                   <TouchableOpacity
                     className="flex-1 bg-error py-3 rounded-lg"
