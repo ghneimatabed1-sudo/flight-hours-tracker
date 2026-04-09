@@ -82,14 +82,6 @@ export default function HomeScreen() {
   const formatDate = (d: Date) =>
     `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
 
-  // Currencies expiring within 7 days (but not already expired)
-  const urgentWarnings = currencyStatuses.filter(
-    (c) => c.daysRemaining >= 0 && c.daysRemaining <= 7
-  );
-
-  // Expired currencies
-  const expiredCurrencies = currencyStatuses.filter((c) => c.daysRemaining < 0);
-
   return (
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -110,40 +102,6 @@ export default function HomeScreen() {
               Track your flight currency requirements
             </Text>
           </View>
-
-          {/* ⚠️ Smart Warning Banner — expired */}
-          {expiredCurrencies.length > 0 && (
-            <View className="bg-error/10 border border-error rounded-2xl p-4 gap-1">
-              <Text className="text-error font-bold text-base">
-                ⛔ {expiredCurrencies.length === 1 ? "1 currency expired" : `${expiredCurrencies.length} currencies expired`}
-              </Text>
-              {expiredCurrencies.map((c) => (
-                <Text key={c.type} className="text-error text-sm">
-                  • {c.name} — expired {Math.abs(c.daysRemaining)} day{Math.abs(c.daysRemaining) !== 1 ? "s" : ""} ago
-                </Text>
-              ))}
-              <Text className="text-error/70 text-xs mt-1">
-                You are not current. Log a qualifying flight to restore currency.
-              </Text>
-            </View>
-          )}
-
-          {/* ⚠️ Smart Warning Banner — expiring soon */}
-          {urgentWarnings.length > 0 && (
-            <View className="bg-warning/10 border border-warning rounded-2xl p-4 gap-1">
-              <Text className="text-warning font-bold text-base">
-                ⚠️ {urgentWarnings.length === 1 ? "1 currency expiring soon" : `${urgentWarnings.length} currencies expiring soon`}
-              </Text>
-              {urgentWarnings.map((c) => (
-                <Text key={c.type} className="text-warning text-sm">
-                  • {c.name} — {c.daysRemaining === 0 ? "expires today" : `${c.daysRemaining} day${c.daysRemaining !== 1 ? "s" : ""} left`}
-                </Text>
-              ))}
-              <Text className="text-warning/70 text-xs mt-1">
-                Log a qualifying flight before your currency lapses.
-              </Text>
-            </View>
-          )}
 
           {/* Currency Cards */}
           <View className="gap-4">
