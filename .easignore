@@ -1,0 +1,10 @@
+node_modules
+.git
+.claude
+__tests__
+*.test.ts
+*.spec.ts
+.env.local
+.env.*.local
+server
+scripts

@@ -60,3 +60,30 @@ Thumbs.db
 *.tgz
 *.tar.gz
 .cache/
+
+# Desktop junk
+*.lnk
+desktop.ini
+ad/
+New folder/
+
+# Build artifacts
+*.apk
+*.ipa
+*.zip
+
+# Test scripts
+test*.js
+test*.ts
+test*.mjs
+
+# Docs generated during dev
+COMPREHENSIVE_TEST_REPORT.md
+DEPLOYMENT_GUIDE.md
+PRE_DEPLOYMENT_CHECKLIST.md
+SIMULATION_*.md
+USER_INSTALLATION_GUIDE.md
+VERCEL_DEPLOYMENT_GUIDE.md
+VERIFICATION_REPORT.md
+WORK_COMPLETED.md
+todo.md
