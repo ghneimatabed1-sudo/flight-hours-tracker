@@ -16,10 +16,10 @@ export function CustomSplash() {
         { backgroundColor: colors.background },
       ]}
     >
-      {/* App Icon */}
+      {/* Pilot Wings */}
       <Image
-        source={require("@/assets/images/icon.png")}
-        style={styles.icon}
+        source={require("@/assets/images/wings.png")}
+        style={styles.wings}
         resizeMode="contain"
       />
 
@@ -71,10 +71,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
   },
-  icon: {
-    width: 120,
-    height: 120,
-    marginBottom: 20,
+  wings: {
+    width: 300,
+    height: 150,
+    marginBottom: 28,
   },
   appName: {
     fontSize: 24,
