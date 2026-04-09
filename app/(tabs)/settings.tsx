@@ -1144,25 +1144,27 @@ export default function SettingsScreen() {
                         className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
                         value={dayDateRaw}
                         onChangeText={(text) => {
-                          setDayDateRaw(text);
-                          if (text === "") {
+                          const digits = text.replace(/\D/g, "").slice(0, 8);
+                          if (digits.length >= 2 && parseInt(digits.slice(0,2), 10) > 31) return;
+                          if (digits.length >= 4 && parseInt(digits.slice(2,4), 10) > 12) return;
+                          let formatted = digits;
+                          if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
+                          else if (digits.length > 2) formatted = digits.slice(0,2) + "/" + digits.slice(2);
+                          setDayDateRaw(formatted);
+                          if (digits.length === 0) {
                             setTempInitialHours(prev => ({ ...prev, lastDayFlyingDate: undefined }));
-                          } else {
-                            const parts = text.split("/");
-                            if (parts.length === 3 && parts[2].length === 4) {
-                              const day = parseInt(parts[0], 10);
-                              const month = parseInt(parts[1], 10);
-                              const year = parseInt(parts[2], 10);
-                              if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year > 1900) {
-                                const iso = new Date(year, month - 1, day).toISOString().split("T")[0];
-                                setTempInitialHours(prev => ({ ...prev, lastDayFlyingDate: iso }));
-                              }
+                          } else if (digits.length === 8) {
+                            const d = parseInt(digits.slice(0,2), 10);
+                            const m = parseInt(digits.slice(2,4), 10);
+                            const y = parseInt(digits.slice(4,8), 10);
+                            if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
+                              setTempInitialHours(prev => ({ ...prev, lastDayFlyingDate: new Date(y, m-1, d).toISOString().split("T")[0] }));
                             }
                           }
                         }}
                         placeholder="DD/MM/YYYY"
                         placeholderTextColor="#9BA1A6"
-                        keyboardType="numbers-and-punctuation"
+                        keyboardType="number-pad"
                       />
                     </View>
 
@@ -1199,25 +1201,27 @@ export default function SettingsScreen() {
                         className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
                         value={nightDateRaw}
                         onChangeText={(text) => {
-                          setNightDateRaw(text);
-                          if (text === "") {
+                          const digits = text.replace(/\D/g, "").slice(0, 8);
+                          if (digits.length >= 2 && parseInt(digits.slice(0,2), 10) > 31) return;
+                          if (digits.length >= 4 && parseInt(digits.slice(2,4), 10) > 12) return;
+                          let formatted = digits;
+                          if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
+                          else if (digits.length > 2) formatted = digits.slice(0,2) + "/" + digits.slice(2);
+                          setNightDateRaw(formatted);
+                          if (digits.length === 0) {
                             setTempInitialHours(prev => ({ ...prev, lastNightFlyingDate: undefined }));
-                          } else {
-                            const parts = text.split("/");
-                            if (parts.length === 3 && parts[2].length === 4) {
-                              const day = parseInt(parts[0], 10);
-                              const month = parseInt(parts[1], 10);
-                              const year = parseInt(parts[2], 10);
-                              if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year > 1900) {
-                                const iso = new Date(year, month - 1, day).toISOString().split("T")[0];
-                                setTempInitialHours(prev => ({ ...prev, lastNightFlyingDate: iso }));
-                              }
+                          } else if (digits.length === 8) {
+                            const d = parseInt(digits.slice(0,2), 10);
+                            const m = parseInt(digits.slice(2,4), 10);
+                            const y = parseInt(digits.slice(4,8), 10);
+                            if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
+                              setTempInitialHours(prev => ({ ...prev, lastNightFlyingDate: new Date(y, m-1, d).toISOString().split("T")[0] }));
                             }
                           }
                         }}
                         placeholder="DD/MM/YYYY"
                         placeholderTextColor="#9BA1A6"
-                        keyboardType="numbers-and-punctuation"
+                        keyboardType="number-pad"
                       />
                     </View>
                   </View>

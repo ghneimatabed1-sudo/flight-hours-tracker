@@ -20,6 +20,10 @@ export default function AddFlightScreen() {
   const { addFlight } = useFlights();
 
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [dateRaw, setDateRaw] = useState(() => {
+    const t = new Date();
+    return `${String(t.getDate()).padStart(2,"0")}/${String(t.getMonth()+1).padStart(2,"0")}/${t.getFullYear()}`;
+  });
   const [aircraftType, setAircraftType] = useState("UH-60M");
   const [aircraftNumber, setAircraftNumber] = useState("");
   const [captainName, setCaptainName] = useState("");
@@ -94,6 +98,8 @@ export default function AddFlightScreen() {
 
       // Reset form
       setDate(new Date().toISOString().split("T")[0]);
+      const t = new Date();
+      setDateRaw(`${String(t.getDate()).padStart(2,"0")}/${String(t.getMonth()+1).padStart(2,"0")}/${t.getFullYear()}`);
       setAircraftType("UH-60M");
       setAircraftNumber("");
       setCaptainName("");
@@ -143,14 +149,35 @@ export default function AddFlightScreen() {
             <View>
               <Text className="text-sm text-muted mb-2">Date *</Text>
               <TextInput
-                value={date}
-                onChangeText={setDate}
-                placeholder="YYYY-MM-DD"
+                value={dateRaw}
+                onChangeText={(text) => {
+                  // Strip non-digits
+                  const digits = text.replace(/\D/g, "").slice(0, 8);
+                  // Block day > 31
+                  if (digits.length >= 2 && parseInt(digits.slice(0, 2), 10) > 31) return;
+                  // Block month > 12
+                  if (digits.length >= 4 && parseInt(digits.slice(2, 4), 10) > 12) return;
+                  // Auto-insert slashes
+                  let formatted = digits;
+                  if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
+                  else if (digits.length > 2) formatted = digits.slice(0,2) + "/" + digits.slice(2);
+                  setDateRaw(formatted);
+                  // Update ISO date when complete
+                  if (digits.length === 8) {
+                    const d = parseInt(digits.slice(0,2), 10);
+                    const m = parseInt(digits.slice(2,4), 10);
+                    const y = parseInt(digits.slice(4,8), 10);
+                    if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
+                      setDate(new Date(y, m-1, d).toISOString().split("T")[0]);
+                    }
+                  }
+                }}
+                placeholder="DD/MM/YYYY"
                 className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
                 placeholderTextColor="#9BA1A6"
+                keyboardType="number-pad"
                 autoComplete="off"
                 autoCorrect={false}
-                autoCapitalize="none"
               />
             </View>
 
