@@ -1,22 +1,7 @@
-/**
- * License Key Cryptography System
- * 
- * This library provides secure license key generation and verification
- * using HMAC-SHA256 for offline validation.
- * 
- * Key Format: FHT-{BASE64_PAYLOAD}-{SIGNATURE}
- * Payload: {expirationDate}|{username}|{timestamp}
- */
-
 import CryptoJS from 'crypto-js';
 import { encode as base64EncodeLib, decode as base64DecodeLib } from 'base-64';
 
-/**
- * Secret key for HMAC signing
- * IMPORTANT: Keep this secret! Change it to your own random string.
- * Anyone with this key can generate valid licenses.
- */
-const SECRET_KEY = "FHT_SECRET_2026_CHANGE_THIS_TO_YOUR_OWN_RANDOM_STRING_12345";
+const _k = "x9#Qm2@Lv8$Np5!Wr3^Tz6&Ys4*Kb7%Jc1~Hd0+Fg";
 
 /**
  * Convert string to hex
@@ -111,7 +96,7 @@ export function generateLicenseKey(
   const payloadEncoded = base64Encode(payload);
 
   // Sign payload
-  const signature = hmacSha256(payload, SECRET_KEY);
+  const signature = hmacSha256(payload, _k);
   const signatureShort = signature.substring(0, 16); // Use first 16 chars for shorter key
 
   // Format: FHT-{PAYLOAD}-{SIGNATURE}
@@ -161,7 +146,7 @@ export function verifyLicenseKey(
 
     // Verify signature
     console.log("[CRYPTO] verifyLicenseKey: Computing expected signature...");
-    const signatureExpected = hmacSha256(payload, SECRET_KEY);
+    const signatureExpected = hmacSha256(payload, _k);
     const signatureExpectedShort = signatureExpected.substring(0, 16);
     console.log("[CRYPTO] verifyLicenseKey: Signature (expected):", signatureExpectedShort);
     console.log("[CRYPTO] verifyLicenseKey: Signature (provided):", signatureProvided);

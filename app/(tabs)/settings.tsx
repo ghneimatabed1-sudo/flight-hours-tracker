@@ -38,6 +38,7 @@ export default function SettingsScreen() {
   const [tempInitialHours, setTempInitialHours] = useState(initialHours);
   const [dayDateRaw, setDayDateRaw] = useState("");
   const [nightDateRaw, setNightDateRaw] = useState("");
+  const [irtDateRaw, setIrtDateRaw] = useState("");
   const [licenseStatus, setLicenseStatus] = useState<{
     valid: boolean;
     expired: boolean;
@@ -72,6 +73,12 @@ export default function SettingsScreen() {
       setNightDateRaw(`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`);
     } else {
       setNightDateRaw("");
+    }
+    if (initialHours.lastIRTFlyingDate) {
+      const d = new Date(initialHours.lastIRTFlyingDate);
+      setIrtDateRaw(`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`);
+    } else {
+      setIrtDateRaw("");
     }
   }, [initialHours]);
 
@@ -245,35 +252,23 @@ export default function SettingsScreen() {
   };
 
   const handleSaveInitialHours = async () => {
-    // Show warning before saving
-    Alert.alert(
-      "Warning",
-      "These values are entered manually as baseline hours. They affect total flight hours but do not impact currency or expiration logic. Incorrect values will affect all totals.\n\nDo you want to continue?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Save",
-          onPress: async () => {
-            setSaving(true);
-            try {
-              await updateInitialHours(tempInitialHours);
-              setEditingInitialHours(false);
-              Alert.alert("Success", "Initial hours saved successfully!");
-            } catch (error) {
-              Alert.alert("Error", "Failed to save initial hours");
-            } finally {
-              setSaving(false);
-            }
-          },
-        },
-      ]
-    );
+    setSaving(true);
+    try {
+      await updateInitialHours(tempInitialHours);
+      setEditingInitialHours(false);
+      Alert.alert("Saved", "Initial hours updated successfully.");
+    } catch (error) {
+      Alert.alert("Error", "Failed to save initial hours.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancelInitialHours = () => {
     setTempInitialHours(initialHours);
     setDayDateRaw(initialHours.lastDayFlyingDate ? (() => { const d = new Date(initialHours.lastDayFlyingDate!); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; })() : "");
     setNightDateRaw(initialHours.lastNightFlyingDate ? (() => { const d = new Date(initialHours.lastNightFlyingDate!); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; })() : "");
+    setIrtDateRaw(initialHours.lastIRTFlyingDate ? (() => { const d = new Date(initialHours.lastIRTFlyingDate!); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; })() : "");
     setEditingInitialHours(false);
   };
 
@@ -1225,6 +1220,37 @@ export default function SettingsScreen() {
                         keyboardType="number-pad"
                       />
                     </View>
+                  </View>
+
+                  {/* Last IRT Flying Date */}
+                  <View className="mt-3">
+                    <Text className="text-sm text-muted mb-1">When was your last IRT flight? (DD/MM/YYYY)</Text>
+                    <TextInput
+                      className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
+                      value={irtDateRaw}
+                      onChangeText={(text) => {
+                        const digits = text.replace(/\D/g, "").slice(0, 8);
+                        if (digits.length >= 2 && parseInt(digits.slice(0,2), 10) > 31) return;
+                        if (digits.length >= 4 && parseInt(digits.slice(2,4), 10) > 12) return;
+                        let formatted = digits;
+                        if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
+                        else if (digits.length > 2) formatted = digits.slice(0,2) + "/" + digits.slice(2);
+                        setIrtDateRaw(formatted);
+                        if (digits.length === 0) {
+                          setTempInitialHours(prev => ({ ...prev, lastIRTFlyingDate: undefined }));
+                        } else if (digits.length === 8) {
+                          const d = parseInt(digits.slice(0,2), 10);
+                          const m = parseInt(digits.slice(2,4), 10);
+                          const y = parseInt(digits.slice(4,8), 10);
+                          if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
+                            setTempInitialHours(prev => ({ ...prev, lastIRTFlyingDate: new Date(y, m-1, d).toISOString().split("T")[0] }));
+                          }
+                        }
+                      }}
+                      placeholder="DD/MM/YYYY"
+                      placeholderTextColor={colors.muted}
+                      keyboardType="number-pad"
+                    />
                   </View>
                 </View>
 

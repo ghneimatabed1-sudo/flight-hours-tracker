@@ -145,9 +145,11 @@ export default function HomeScreen() {
                 {/* Divider */}
                 <View className="border-t border-border mb-3" />
 
-                {/* Last qualifying flight date — always shown */}
+                {/* Last flight / test date — always shown */}
                 <View className="flex-row justify-between items-center">
-                  <Text className="text-xs text-muted">Last qualifying flight</Text>
+                  <Text className="text-xs text-muted">
+                    {currency.type === "medical" ? "Last medical test" : "Last qualifying flight"}
+                  </Text>
                   <Text className="text-xs font-semibold text-foreground">
                     {currency.lastFlightDate
                       ? formatDate(new Date(currency.lastFlightDate))
@@ -155,9 +157,11 @@ export default function HomeScreen() {
                   </Text>
                 </View>
 
-                {/* Expiry date — always shown */}
+                {/* Expiry / valid until — always shown */}
                 <View className="flex-row justify-between items-center mt-1">
-                  <Text className="text-xs text-muted">Expires on</Text>
+                  <Text className="text-xs text-muted">
+                    {currency.type === "medical" ? "Valid until" : "Expires on"}
+                  </Text>
                   <Text className={`text-xs font-semibold ${getStatusColor(currency.status)}`}>
                     {currency.expirationDate
                       ? formatDate(new Date(currency.expirationDate))

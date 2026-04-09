@@ -26,6 +26,7 @@ export interface InitialHours {
   lastDayFlyingDate?: string; // ISO date string (e.g., "2024-01-15")
   lastNightFlying?: "night" | "nvg"; // Was it night or NVG?
   lastNightFlyingDate?: string; // ISO date string
+  lastIRTFlyingDate?: string; // ISO date string
 }
 
 export const DEFAULT_INITIAL_HOURS: InitialHours = {
@@ -48,4 +49,5 @@ export const DEFAULT_INITIAL_HOURS: InitialHours = {
   lastDayFlyingDate: undefined,
   lastNightFlying: undefined,
   lastNightFlyingDate: undefined,
+  lastIRTFlyingDate: undefined,
 };

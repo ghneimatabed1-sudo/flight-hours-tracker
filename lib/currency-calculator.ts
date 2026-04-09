@@ -116,6 +116,8 @@ export function calculateCurrencyStatus(
       lastFlightDate = new Date(initialHours.lastNightFlyingDate);
     } else if (currency.type === "nvg" && initialHours.lastNightFlying === "nvg" && initialHours.lastNightFlyingDate) {
       lastFlightDate = new Date(initialHours.lastNightFlyingDate);
+    } else if (currency.type === "irt" && initialHours.lastIRTFlyingDate) {
+      lastFlightDate = new Date(initialHours.lastIRTFlyingDate);
     }
   }
 
