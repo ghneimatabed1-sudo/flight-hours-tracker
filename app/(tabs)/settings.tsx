@@ -1128,7 +1128,13 @@ export default function SettingsScreen() {
                         className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
                         value={
                           tempInitialHours.lastDayFlyingDate
-                            ? new Date(tempInitialHours.lastDayFlyingDate).toLocaleDateString("en-GB")
+                            ? (() => {
+                                const d = new Date(tempInitialHours.lastDayFlyingDate);
+                                const day = String(d.getDate()).padStart(2, "0");
+                                const month = String(d.getMonth() + 1).padStart(2, "0");
+                                const year = d.getFullYear();
+                                return `${day}/${month}/${year}`;
+                              })()
                             : ""
                         }
                         onChangeText={(value) => {
@@ -1186,7 +1192,13 @@ export default function SettingsScreen() {
                         className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
                         value={
                           tempInitialHours.lastNightFlyingDate
-                            ? new Date(tempInitialHours.lastNightFlyingDate).toLocaleDateString("en-GB")
+                            ? (() => {
+                                const d = new Date(tempInitialHours.lastNightFlyingDate);
+                                const day = String(d.getDate()).padStart(2, "0");
+                                const month = String(d.getMonth() + 1).padStart(2, "0");
+                                const year = d.getFullYear();
+                                return `${day}/${month}/${year}`;
+                              })()
                             : ""
                         }
                         onChangeText={(value) => {
@@ -1241,9 +1253,27 @@ export default function SettingsScreen() {
             <Text className="text-lg font-semibold text-foreground mb-3">
               Theme
             </Text>
-            <Text className="text-sm text-muted">
-              Theme selection coming soon. You&apos;ll be able to switch between Default (camouflage) and Dark modes.
+            <Text className="text-sm text-muted mb-3">
+              Switch between Default and Dark modes
             </Text>
+            <View className="flex-row gap-2">
+              <TouchableOpacity
+                className={`flex-1 py-2 rounded-lg border ${settings.theme === "default" ? "bg-primary border-primary" : "bg-background border-border"}`}
+                onPress={() => updateTheme("default")}
+              >
+                <Text className={`text-center font-semibold ${settings.theme === "default" ? "text-background" : "text-foreground"}`}>
+                  Default
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className={`flex-1 py-2 rounded-lg border ${settings.theme === "dark" ? "bg-primary border-primary" : "bg-background border-border"}`}
+                onPress={() => updateTheme("dark")}
+              >
+                <Text className={`text-center font-semibold ${settings.theme === "dark" ? "text-background" : "text-foreground"}`}>
+                  Dark
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Credits Section */}
