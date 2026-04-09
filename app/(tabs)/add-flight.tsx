@@ -13,11 +13,13 @@ import * as Haptics from "expo-haptics";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { useFlights } from "@/lib/flight-context";
+import { useColors } from "@/hooks/use-colors";
 import type { FlightCondition, FlightPosition, FlightType } from "@/types/flight";
 
 export default function AddFlightScreen() {
   const router = useRouter();
   const { addFlight } = useFlights();
+  const colors = useColors();
 
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [dateRaw, setDateRaw] = useState(() => {
@@ -174,7 +176,7 @@ export default function AddFlightScreen() {
                 }}
                 placeholder="DD/MM/YYYY"
                 className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
-                placeholderTextColor="#9BA1A6"
+                placeholderTextColor={colors.muted}
                 keyboardType="number-pad"
                 autoComplete="off"
                 autoCorrect={false}
@@ -188,7 +190,7 @@ export default function AddFlightScreen() {
                 onChangeText={(text) => setAircraftType(text.toUpperCase())}
                 placeholder="e.g., UH-60M"
                 className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
-                placeholderTextColor="#9BA1A6"
+                placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -202,7 +204,7 @@ export default function AddFlightScreen() {
                 onChangeText={(text) => setAircraftNumber(text.toUpperCase())}
                 placeholder="e.g., 12345"
                 className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
-                placeholderTextColor="#9BA1A6"
+                placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -221,7 +223,7 @@ export default function AddFlightScreen() {
                 onChangeText={(text) => setCaptainName(text.toUpperCase())}
                 placeholder="Enter captain name"
                 className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
-                placeholderTextColor="#9BA1A6"
+                placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -235,7 +237,7 @@ export default function AddFlightScreen() {
                 onChangeText={(text) => setCoPilotName(text.toUpperCase())}
                 placeholder="Enter co-pilot name"
                 className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
-                placeholderTextColor="#9BA1A6"
+                placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -249,7 +251,7 @@ export default function AddFlightScreen() {
                 onChangeText={(text) => setMission(text.toUpperCase())}
                 placeholder="e.g., MTP CRS 1, training, operational"
                 className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
-                placeholderTextColor="#9BA1A6"
+                placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -408,7 +410,7 @@ export default function AddFlightScreen() {
                 placeholder="e.g., 1.5, 2.3"
                 keyboardType="decimal-pad"
                 className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground text-lg"
-                placeholderTextColor="#9BA1A6"
+                placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -424,7 +426,7 @@ export default function AddFlightScreen() {
                 placeholder="e.g., 0.5, 1.0"
                 keyboardType="decimal-pad"
                 className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground text-lg"
-                placeholderTextColor="#9BA1A6"
+                placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -484,7 +486,7 @@ export default function AddFlightScreen() {
                       placeholder="e.g., 1.0, 1.5"
                       keyboardType="decimal-pad"
                       className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -499,7 +501,7 @@ export default function AddFlightScreen() {
                       placeholder="e.g., 0.5, 1.0"
                       keyboardType="decimal-pad"
                       className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -514,7 +516,7 @@ export default function AddFlightScreen() {
                       placeholder="Number of ILS approaches"
                       keyboardType="number-pad"
                       className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -529,7 +531,7 @@ export default function AddFlightScreen() {
                       placeholder="Number of VOR approaches"
                       keyboardType="number-pad"
                       className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"

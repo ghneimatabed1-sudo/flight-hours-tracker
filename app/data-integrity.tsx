@@ -1,6 +1,7 @@
 import { ScrollView, Text, View, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
+import { useColors } from "@/hooks/use-colors";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { useFlights } from "@/lib/flight-context";
@@ -8,6 +9,7 @@ import { repairFlight, type ValidationError } from "@/lib/data-integrity";
 
 export default function DataIntegrityScreen() {
   const router = useRouter();
+  const colors = useColors();
   const { integrityReport, runIntegrityCheck, flights, updateFlight, refreshFlights } = useFlights();
   const [checking, setChecking] = useState(false);
   const [repairing, setRepairing] = useState(false);
@@ -169,7 +171,7 @@ export default function DataIntegrityScreen() {
               className="bg-primary rounded-xl py-4 items-center"
             >
               {checking ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color={colors.background} />
               ) : (
                 <Text className="text-background font-semibold text-base">
                   Run Integrity Check
@@ -184,7 +186,7 @@ export default function DataIntegrityScreen() {
                 className="bg-surface border border-primary rounded-xl py-4 items-center"
               >
                 {repairing ? (
-                  <ActivityIndicator color="#6B7F5F" />
+                  <ActivityIndicator color={colors.primary} />
                 ) : (
                   <Text className="text-primary font-semibold text-base">
                     Attempt Automatic Repair

@@ -12,7 +12,7 @@ import {
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useThemeContext } from "@/lib/theme-provider";
-
+import { useColors } from "@/hooks/use-colors";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { useSettings } from "@/lib/settings-context";
@@ -25,6 +25,7 @@ import { verifyLicenseKey, isLicenseExpired } from "@/lib/license-crypto";
 export default function SettingsScreen() {
   const router = useRouter();
   const { setColorScheme } = useThemeContext();
+  const colors = useColors();
   const { settings, loading, updateFlightName, updateCurrencies, updateTheme, updateDayCurrencyRefreshMode } = useSettings();
   const { integrityReport } = useFlights();
   const { initialHours, updateInitialHours } = useInitialHours();
@@ -409,7 +410,7 @@ export default function SettingsScreen() {
               onChangeText={(text) => setFlightName(text.toUpperCase())}
               placeholder="Enter flight name (e.g., HAWK-01)"
               className="bg-background border border-border rounded-lg px-4 py-3 text-foreground text-lg font-bold mb-4"
-              placeholderTextColor="#9BA1A6"
+              placeholderTextColor={colors.muted}
               autoComplete="off"
               autoCorrect={false}
               autoCapitalize="characters"
@@ -713,7 +714,7 @@ export default function SettingsScreen() {
                             className={`bg-background border rounded-lg px-4 py-3 text-foreground ${
                               dateErrors[index] ? "border-error" : "border-border"
                             }`}
-                            placeholderTextColor="#9BA1A6"
+                            placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -741,7 +742,7 @@ export default function SettingsScreen() {
                             placeholder="e.g., 30"
                             keyboardType="number-pad"
                             className="bg-background border border-border rounded-lg px-4 py-3 text-foreground"
-                            placeholderTextColor="#9BA1A6"
+                            placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -762,7 +763,7 @@ export default function SettingsScreen() {
                             placeholder="e.g., 30"
                             keyboardType="number-pad"
                             className="bg-background border border-border rounded-lg px-4 py-3 text-foreground"
-                            placeholderTextColor="#9BA1A6"
+                            placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -777,7 +778,7 @@ export default function SettingsScreen() {
                             placeholder="e.g., 7"
                             keyboardType="number-pad"
                             className="bg-background border border-border rounded-lg px-4 py-3 text-foreground"
-                            placeholderTextColor="#9BA1A6"
+                            placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -902,7 +903,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("totalHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -916,7 +917,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("dayHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -930,7 +931,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("nightHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -944,7 +945,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("nvgHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -958,7 +959,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("instrumentHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -972,7 +973,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("captainHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -986,7 +987,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("captainHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -1000,7 +1001,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("copilotHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -1014,7 +1015,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("dualDayHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -1028,7 +1029,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("dualNightHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -1042,7 +1043,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("dualNVGHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -1056,7 +1057,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("day1stPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -1070,7 +1071,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("day2ndPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -1084,7 +1085,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("night1stPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -1098,7 +1099,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("night2ndPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -1112,7 +1113,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("nvg1stPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -1126,7 +1127,7 @@ export default function SettingsScreen() {
                       onChangeText={(value) => handleUpdateInitialHour("nvg2ndPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
-                      placeholderTextColor="#9BA1A6"
+                      placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="characters"
@@ -1163,7 +1164,7 @@ export default function SettingsScreen() {
                           }
                         }}
                         placeholder="DD/MM/YYYY"
-                        placeholderTextColor="#9BA1A6"
+                        placeholderTextColor={colors.muted}
                         keyboardType="number-pad"
                       />
                     </View>
@@ -1220,7 +1221,7 @@ export default function SettingsScreen() {
                           }
                         }}
                         placeholder="DD/MM/YYYY"
-                        placeholderTextColor="#9BA1A6"
+                        placeholderTextColor={colors.muted}
                         keyboardType="number-pad"
                       />
                     </View>
@@ -1240,7 +1241,7 @@ export default function SettingsScreen() {
                     disabled={saving}
                   >
                     {saving ? (
-                      <ActivityIndicator color="#ffffff" />
+                      <ActivityIndicator color={colors.background} />
                     ) : (
                       <Text className="text-background text-center font-semibold">Save</Text>
                     )}
@@ -1308,7 +1309,7 @@ export default function SettingsScreen() {
         animationType="fade"
         onRequestClose={() => setShowRenewModal(false)}
       >
-        <View className="flex-1 justify-center items-center bg-black/50 p-6">
+        <View className="flex-1 justify-center items-center bg-foreground/50 p-6">
           <View className="bg-background rounded-2xl p-6 w-full max-w-md border border-border">
             <Text className="text-xl font-bold text-foreground mb-4 text-center">
               🔄 Renew License
@@ -1322,7 +1323,7 @@ export default function SettingsScreen() {
               value={newLicenseKey}
               onChangeText={setNewLicenseKey}
               placeholder="Enter license key"
-              placeholderTextColor="#9BA1A6"
+              placeholderTextColor={colors.muted}
               autoComplete="off"
               autoCorrect={false}
               autoCapitalize="characters"
