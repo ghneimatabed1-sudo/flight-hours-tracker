@@ -306,7 +306,7 @@ export default function FlightDetailScreen() {
               <Text className="text-sm text-muted mb-2">Flight Condition</Text>
               <View className="flex-row gap-2">
                 <TouchableOpacity
-                  onPress={() => setCondition("day")}
+                  onPress={() => { setCondition("day"); setNvg(false); }}
                   className={`flex-1 py-3 rounded-lg border ${
                     condition === "day"
                       ? "bg-primary border-primary"
@@ -359,6 +359,8 @@ export default function FlightDetailScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setNvg(true)}
+                  disabled={condition === "day"}
+                  style={condition === "day" ? { opacity: 0.35 } : {}}
                   className={`flex-1 py-3 rounded-lg border ${
                     nvg ? "bg-primary border-primary" : "bg-surface border-border"
                   }`}

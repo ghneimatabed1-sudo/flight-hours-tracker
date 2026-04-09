@@ -73,6 +73,12 @@ export async function exportToExcel(options: ExportOptions): Promise<void> {
     ["  Night Dual", formatHours(totals.dualNightHours)],
     ["  NVG Dual", formatHours(totals.dualNVGHours)],
     ["  Instrument Dual", formatHours(totals.dualInstrumentHours)],
+    ["", ""],
+
+    // Approach Counts
+    ["Approach Counts", ""],
+    ["  ILS Approaches", totals.totalILSApproaches.toString()],
+    ["  VOR Approaches", totals.totalVORApproaches.toString()],
   ];
 
   // Create totals worksheet
@@ -110,7 +116,7 @@ export async function exportToExcel(options: ExportOptions): Promise<void> {
   const flightRows = flights
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .map((flight) => [
-      new Date(flight.date).toLocaleDateString(),
+      (() => { const d = new Date(flight.date); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; })(),
       flight.aircraftType,
       flight.aircraftNumber,
       flight.captainName,
@@ -129,7 +135,17 @@ export async function exportToExcel(options: ExportOptions): Promise<void> {
       flight.vorCount || 0,
     ]);
 
-  const flightData = [flightHeaders, ...flightRows];
+  const totalRow = [
+    "TOTAL",
+    "", "", "", "", "", "", "", "", "",
+    formatHours(flights.reduce((s, f) => s + f.flightTime, 0)),
+    formatHours(flights.reduce((s, f) => s + (f.dualHours || 0), 0)),
+    "", "", "",
+    flights.reduce((s, f) => s + (f.ilsCount || 0), 0),
+    flights.reduce((s, f) => s + (f.vorCount || 0), 0),
+  ];
+
+  const flightData = [flightHeaders, ...flightRows, [], totalRow];
 
   // Create flights worksheet
   const flightsWorksheet = XLSX.utils.aoa_to_sheet(flightData);

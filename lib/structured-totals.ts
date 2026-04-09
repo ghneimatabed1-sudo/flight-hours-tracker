@@ -44,6 +44,8 @@ export interface StructuredTotals {
   dualNVGHours: number;
   dualInstrumentHours: number;
   
+  totalILSApproaches: number;
+  totalVORApproaches: number;
   flightCount: number;
 }
 
@@ -89,7 +91,9 @@ function convertToStructuredTotals(totals: FlightTotals, flightCount: number): S
     dualNightHours: totals.dualNightHours,
     dualNVGHours: totals.dualNVGHours,
     dualInstrumentHours: totals.dualInstrumentHours,
-    
+    totalILSApproaches: totals.totalILSApproaches,
+    totalVORApproaches: totals.totalVORApproaches,
+
     flightCount,
   };
 }

@@ -91,7 +91,7 @@ export function calculateCurrencyStatus(
       case "night":
         return flight.condition === "night" && !flight.nvg;
       case "nvg":
-        return flight.nvg;
+        return flight.nvg === true && flight.condition === "night";
       case "irt":
         return flight.mission.toUpperCase() === "IRT" && flight.instrumentFlight;
       default:

@@ -35,6 +35,8 @@ export default function SettingsScreen() {
   const [saving, setSaving] = useState(false);
   const [editingInitialHours, setEditingInitialHours] = useState(false);
   const [tempInitialHours, setTempInitialHours] = useState(initialHours);
+  const [dayDateRaw, setDayDateRaw] = useState("");
+  const [nightDateRaw, setNightDateRaw] = useState("");
   const [licenseStatus, setLicenseStatus] = useState<{
     valid: boolean;
     expired: boolean;
@@ -58,6 +60,18 @@ export default function SettingsScreen() {
 
   useEffect(() => {
     setTempInitialHours(initialHours);
+    if (initialHours.lastDayFlyingDate) {
+      const d = new Date(initialHours.lastDayFlyingDate);
+      setDayDateRaw(`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`);
+    } else {
+      setDayDateRaw("");
+    }
+    if (initialHours.lastNightFlyingDate) {
+      const d = new Date(initialHours.lastNightFlyingDate);
+      setNightDateRaw(`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`);
+    } else {
+      setNightDateRaw("");
+    }
   }, [initialHours]);
 
   useEffect(() => {
@@ -257,6 +271,8 @@ export default function SettingsScreen() {
 
   const handleCancelInitialHours = () => {
     setTempInitialHours(initialHours);
+    setDayDateRaw(initialHours.lastDayFlyingDate ? (() => { const d = new Date(initialHours.lastDayFlyingDate!); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; })() : "");
+    setNightDateRaw(initialHours.lastNightFlyingDate ? (() => { const d = new Date(initialHours.lastNightFlyingDate!); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; })() : "");
     setEditingInitialHours(false);
   };
 
@@ -1126,36 +1142,27 @@ export default function SettingsScreen() {
                       <Text className="text-sm text-muted mb-1">When was your last day flying? (DD/MM/YYYY)</Text>
                       <TextInput
                         className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                        value={
-                          tempInitialHours.lastDayFlyingDate
-                            ? (() => {
-                                const d = new Date(tempInitialHours.lastDayFlyingDate);
-                                const day = String(d.getDate()).padStart(2, "0");
-                                const month = String(d.getMonth() + 1).padStart(2, "0");
-                                const year = d.getFullYear();
-                                return `${day}/${month}/${year}`;
-                              })()
-                            : ""
-                        }
-                        onChangeText={(value) => {
-                          if (value === "") {
-                            setTempInitialHours({ ...tempInitialHours, lastDayFlyingDate: undefined });
+                        value={dayDateRaw}
+                        onChangeText={(text) => {
+                          setDayDateRaw(text);
+                          if (text === "") {
+                            setTempInitialHours(prev => ({ ...prev, lastDayFlyingDate: undefined }));
                           } else {
-                            // Parse DD/MM/YYYY format
-                            const parts = value.split("/");
-                            if (parts.length === 3) {
+                            const parts = text.split("/");
+                            if (parts.length === 3 && parts[2].length === 4) {
                               const day = parseInt(parts[0], 10);
                               const month = parseInt(parts[1], 10);
                               const year = parseInt(parts[2], 10);
-                              if (day > 0 && day <= 31 && month > 0 && month <= 12 && year > 1900) {
-                                const date = new Date(year, month - 1, day);
-                                setTempInitialHours({ ...tempInitialHours, lastDayFlyingDate: date.toISOString().split("T")[0] });
+                              if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year > 1900) {
+                                const iso = new Date(year, month - 1, day).toISOString().split("T")[0];
+                                setTempInitialHours(prev => ({ ...prev, lastDayFlyingDate: iso }));
                               }
                             }
                           }
                         }}
                         placeholder="DD/MM/YYYY"
                         placeholderTextColor="#9BA1A6"
+                        keyboardType="numbers-and-punctuation"
                       />
                     </View>
 
@@ -1190,36 +1197,27 @@ export default function SettingsScreen() {
                       {/* Night/NVG Date Input */}
                       <TextInput
                         className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                        value={
-                          tempInitialHours.lastNightFlyingDate
-                            ? (() => {
-                                const d = new Date(tempInitialHours.lastNightFlyingDate);
-                                const day = String(d.getDate()).padStart(2, "0");
-                                const month = String(d.getMonth() + 1).padStart(2, "0");
-                                const year = d.getFullYear();
-                                return `${day}/${month}/${year}`;
-                              })()
-                            : ""
-                        }
-                        onChangeText={(value) => {
-                          if (value === "") {
-                            setTempInitialHours({ ...tempInitialHours, lastNightFlyingDate: undefined });
+                        value={nightDateRaw}
+                        onChangeText={(text) => {
+                          setNightDateRaw(text);
+                          if (text === "") {
+                            setTempInitialHours(prev => ({ ...prev, lastNightFlyingDate: undefined }));
                           } else {
-                            // Parse DD/MM/YYYY format
-                            const parts = value.split("/");
-                            if (parts.length === 3) {
+                            const parts = text.split("/");
+                            if (parts.length === 3 && parts[2].length === 4) {
                               const day = parseInt(parts[0], 10);
                               const month = parseInt(parts[1], 10);
                               const year = parseInt(parts[2], 10);
-                              if (day > 0 && day <= 31 && month > 0 && month <= 12 && year > 1900) {
-                                const date = new Date(year, month - 1, day);
-                                setTempInitialHours({ ...tempInitialHours, lastNightFlyingDate: date.toISOString().split("T")[0] });
+                              if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year > 1900) {
+                                const iso = new Date(year, month - 1, day).toISOString().split("T")[0];
+                                setTempInitialHours(prev => ({ ...prev, lastNightFlyingDate: iso }));
                               }
                             }
                           }
                         }}
                         placeholder="DD/MM/YYYY"
                         placeholderTextColor="#9BA1A6"
+                        keyboardType="numbers-and-punctuation"
                       />
                     </View>
                   </View>
