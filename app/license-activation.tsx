@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { ScreenContainer } from "@/components/screen-container";
-import { verifyLicenseKey, isLicenseExpired, type LicenseKeyData } from "@/lib/license-crypto";
+import { verifyLicenseKey, isLicenseExpired } from "@/lib/license-crypto";
 import { saveLicense } from "@/lib/license-manager";
+import { useColors } from "@/hooks/use-colors";
 
 export default function LicenseActivationScreen() {
   const [licenseKey, setLicenseKey] = useState("");
   const [loading, setLoading] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<string>("");
+  const colors = useColors();
 
   const handleActivate = async () => {
     if (!licenseKey.trim()) {
@@ -19,65 +19,28 @@ export default function LicenseActivationScreen() {
     }
 
     setLoading(true);
-
     try {
-      // Verify license key
-      setDebugInfo("Starting verification...\n");
-      console.log('[ACTIVATION] Starting verification for key:', licenseKey.trim());
-      
-      setDebugInfo(prev => prev + "Calling verifyLicenseKey()...\n");
       const licenseData = verifyLicenseKey(licenseKey.trim());
-      console.log('[ACTIVATION] Verification result:', licenseData);
-      setDebugInfo(prev => prev + `Result: ${JSON.stringify(licenseData, null, 2)}\n`);
 
       if (!licenseData) {
-        // Show detailed error for debugging
-        setDebugInfo(prev => prev + "ERROR: licenseData is null/undefined\n");
-        Alert.alert(
-          "Invalid License Key",
-          "The license key you entered is invalid. Please check and try again.\n\nKey: " + licenseKey.trim().substring(0, 20) + "..."
-        );
-        setLoading(false);
+        Alert.alert("Invalid License Key", "The license key you entered is invalid. Please check and try again.");
         return;
       }
 
-      // Check if expired
       if (isLicenseExpired(licenseData)) {
-        Alert.alert(
-          "License Expired",
-          `This license key expired on ${new Date(licenseData.expirationDate).toLocaleDateString()}.`
-        );
-        setLoading(false);
+        Alert.alert("License Expired", `This license key expired on ${new Date(licenseData.expirationDate).toLocaleDateString()}.`);
         return;
       }
 
-      // Save license to storage (with Device ID)
       await saveLicense(licenseKey.trim(), licenseData);
 
-      // Show success message
       Alert.alert(
         "License Activated",
         `Welcome${licenseData.username ? `, ${licenseData.username}` : ""}!\n\nYour license is valid until ${new Date(licenseData.expirationDate).toLocaleDateString()}.`,
-        [
-          {
-            text: "Continue",
-            onPress: () => {
-              // Navigate to main app
-              router.replace("/(tabs)");
-            },
-          },
-        ]
+        [{ text: "Continue", onPress: () => router.replace("/(tabs)") }]
       );
-    } catch (error) {
-      // Show detailed error for debugging
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      const errorStack = error instanceof Error ? error.stack : "";
-      setDebugInfo(prev => prev + `\nCATCH ERROR:\n${errorMessage}\n${errorStack}\n`);
-      Alert.alert(
-        "Error", 
-        "Failed to activate license.\n\nError: " + errorMessage + "\n\nPlease try again or contact support."
-      );
-      console.error("[ACTIVATION] License activation error:", error);
+    } catch {
+      Alert.alert("Error", "Failed to activate license. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -116,6 +79,7 @@ export default function LicenseActivationScreen() {
               value={licenseKey}
               onChangeText={setLicenseKey}
               placeholder="FHT-XXXXX-XXXXX-XXXXX"
+              placeholderTextColor={colors.muted}
               autoCapitalize="characters"
               autoCorrect={false}
               autoComplete="off"
@@ -131,7 +95,7 @@ export default function LicenseActivationScreen() {
             style={{ opacity: loading ? 0.6 : 1 }}
           >
             {loading ? (
-              <ActivityIndicator color="white" />
+              <ActivityIndicator color={colors.background} />
             ) : (
               <Text className="text-background font-semibold text-base">
                 🔐 Activate License
@@ -139,18 +103,6 @@ export default function LicenseActivationScreen() {
             )}
           </TouchableOpacity>
         </View>
-
-        {/* Debug Info */}
-        {debugInfo ? (
-          <View className="mt-6 bg-error/10 rounded-xl p-4 border border-error/30">
-            <Text className="text-xs font-semibold text-error mb-2">
-              🐛 Debug Info:
-            </Text>
-            <Text className="text-xs text-foreground font-mono">
-              {debugInfo}
-            </Text>
-          </View>
-        ) : null}
 
         {/* Help Text */}
         <View className="mt-6 bg-surface/50 rounded-xl p-4 border border-border/50">
@@ -165,7 +117,6 @@ export default function LicenseActivationScreen() {
           </Text>
         </View>
 
-        {/* Footer */}
         <Text className="text-xs text-muted text-center mt-8">
           Flight Hours Tracker © 2026
         </Text>
