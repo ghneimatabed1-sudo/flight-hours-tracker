@@ -145,7 +145,7 @@ export default function HomeScreen() {
                 {/* Divider */}
                 <View className="border-t border-border mb-3" />
 
-                {/* Last qualifying flight date */}
+                {/* Last qualifying flight date — always shown */}
                 <View className="flex-row justify-between items-center">
                   <Text className="text-xs text-muted">Last qualifying flight</Text>
                   <Text className="text-xs font-semibold text-foreground">
@@ -155,25 +155,15 @@ export default function HomeScreen() {
                   </Text>
                 </View>
 
-                {/* Expiry date */}
-                {currency.expirationDate && (
-                  <View className="flex-row justify-between items-center mt-1">
-                    <Text className="text-xs text-muted">Expires on</Text>
-                    <Text className={`text-xs font-semibold ${getStatusColor(currency.status)}`}>
-                      {formatDate(new Date(currency.expirationDate))}
-                    </Text>
-                  </View>
-                )}
-
-                {/* Test date (medical) */}
-                {currency.testDate && (
-                  <View className="flex-row justify-between items-center mt-1">
-                    <Text className="text-xs text-muted">Test date</Text>
-                    <Text className="text-xs font-semibold text-foreground">
-                      {formatDate(new Date(currency.testDate))}
-                    </Text>
-                  </View>
-                )}
+                {/* Expiry date — always shown */}
+                <View className="flex-row justify-between items-center mt-1">
+                  <Text className="text-xs text-muted">Expires on</Text>
+                  <Text className={`text-xs font-semibold ${getStatusColor(currency.status)}`}>
+                    {currency.expirationDate
+                      ? formatDate(new Date(currency.expirationDate))
+                      : "—"}
+                  </Text>
+                </View>
               </View>
             ))}
           </View>
