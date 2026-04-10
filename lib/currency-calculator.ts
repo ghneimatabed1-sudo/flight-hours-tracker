@@ -14,7 +14,7 @@ export interface CurrencyStatus {
   status: "VALID" | "EXPIRING SOON" | "EXPIRED";
   expirationDate?: Date;
   lastFlightDate?: Date;
-  testDate?: Date; // For date-based currencies (medical only)
+  testDate?: Date; // For date-based currencies (medical, irt)
 }
 
 /**
@@ -29,9 +29,9 @@ export function calculateCurrencyStatus(
   initialHours?: InitialHours
 ): CurrencyStatus {
   const name = getCurrencyName(currency.type);
-  const isDateBased = currency.type === "medical"; // Only Medical is date-based now
-  
-  // DATE-BASED CURRENCIES (Medical only)
+  const isDateBased = currency.type === "medical" || currency.type === "irt";
+
+  // DATE-BASED CURRENCIES (Medical, IRT)
   if (isDateBased) {
     if (!currency.testDate) {
       // No test date set, currency is expired
@@ -119,8 +119,6 @@ export function calculateCurrencyStatus(
       baselineDate = new Date(initialHours.lastNightFlyingDate);
     } else if (currency.type === "nvg" && initialHours.lastNightFlying === "nvg" && initialHours.lastNightFlyingDate) {
       baselineDate = new Date(initialHours.lastNightFlyingDate);
-    } else if (currency.type === "irt" && initialHours.lastIRTFlyingDate) {
-      baselineDate = new Date(initialHours.lastIRTFlyingDate);
     }
     if (baselineDate && (!lastFlightDate || baselineDate > lastFlightDate)) {
       lastFlightDate = baselineDate;
