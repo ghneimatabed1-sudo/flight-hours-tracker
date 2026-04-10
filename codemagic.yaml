@@ -27,6 +27,7 @@ workflows:
 
       - name: Build unsigned IPA
         script: |
+          set -exo pipefail
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" 2>/dev/null | head -1)
           SCHEME=$(xcodebuild -workspace "$WORKSPACE" -list 2>&1 | grep -A 20 "Schemes:" | grep -v "Schemes:" | grep -v "^$" | head -1 | xargs)
           DERIVED="$HOME/DerivedData"
@@ -42,18 +43,18 @@ workflows:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             ENABLE_BITCODE=NO \
-            COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tail -5
+            COMPILER_INDEX_STORE_ENABLE=NO
 
-          echo "=== Products ==="
-          ls "$DERIVED/Build/Products/Release-iphoneos/" 2>&1 | head -20
+          echo "=== Searching for .app ==="
+          find "$DERIVED" -name "FlightHoursTracker.app" -type d 2>/dev/null
 
-          APP=$(find "$DERIVED/Build/Products/Release-iphoneos" -maxdepth 1 -name "*.app" 2>/dev/null | head -1)
+          APP=$(find "$DERIVED" -name "FlightHoursTracker.app" -type d 2>/dev/null | grep -v "\.xctest" | head -1)
           echo "APP=[$APP]"
+          test -d "$APP"
 
-          OUTDIR="$HOME/ipa_output"
-          mkdir -p "$OUTDIR/Payload"
-          cp -r "$APP" "$OUTDIR/Payload/"
-          cd "$OUTDIR" && zip -r "$HOME/FlightHoursTracker.ipa" Payload/
+          mkdir -p "$HOME/Payload"
+          cp -r "$APP" "$HOME/Payload/"
+          cd "$HOME" && zip -r FlightHoursTracker.ipa Payload/
           ls -lh "$HOME/FlightHoursTracker.ipa"
 
     artifacts:
