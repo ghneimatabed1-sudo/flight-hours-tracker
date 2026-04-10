@@ -27,17 +27,18 @@ workflows:
 
       - name: Build unsigned IPA
         script: |
+          set -e
           WORKSPACE=$(find ios -name "*.xcworkspace" -maxdepth 2 | head -1)
           if [ -z "$WORKSPACE" ]; then
-            echo "ERROR: No xcworkspace found in ios/"
-            ls -la ios/ 2>/dev/null
+            echo "ERROR: No xcworkspace found!"
+            ls -la ios/ 2>/dev/null || echo "No ios folder either"
             exit 1
           fi
           SCHEME=$(xcodebuild -workspace "$WORKSPACE" -list 2>&1 | grep -A 20 "Schemes:" | grep -v "Schemes:" | grep -v "^$" | head -1 | xargs)
-          echo "Workspace: $WORKSPACE"
-          echo "Scheme: $SCHEME"
+          echo "Workspace: $WORKSPACE  |  Scheme: $SCHEME"
 
-          # Build to DerivedData (avoids archive signing issues)
+          # Build for device
+          BUILD_LOG="$CM_BUILD_DIR/build.log"
           xcodebuild build \
             -workspace "$WORKSPACE" \
             -scheme "$SCHEME" \
@@ -47,12 +48,22 @@ workflows:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            ENABLE_BITCODE=NO 2>&1 | tail -50
+            ENABLE_BITCODE=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee "$BUILD_LOG" | tail -30
 
-          echo "=== Finding built .app ==="
-          find "$CM_BUILD_DIR/DerivedData" -name "*.app" 2>/dev/null
+          # Check outcome
+          if grep -q "BUILD FAILED" "$BUILD_LOG"; then
+            echo "=== XCODEBUILD FAILED - last 100 lines ==="
+            tail -100 "$BUILD_LOG"
+            exit 1
+          fi
 
-          APP=$(find "$CM_BUILD_DIR/DerivedData" -name "*.app" -not -path "*/Index.noindex/*" | head -1)
+          APP=$(find "$CM_BUILD_DIR/DerivedData/Build/Products" -name "*.app" -maxdepth 3 | head -1)
+          if [ -z "$APP" ]; then
+            echo "ERROR: No .app found in DerivedData"
+            find "$CM_BUILD_DIR/DerivedData/Build" -maxdepth 4 2>/dev/null
+            exit 1
+          fi
           echo "App: $APP"
 
           mkdir -p "$CM_BUILD_DIR/Payload"
