@@ -136,8 +136,14 @@ export function calculateCurrencyStatus(
   }
   
   // Calculate expiration date
+  // For ~30-day currencies (day/night/nvg), add 1 calendar month so expiry
+  // respects the actual length of the month (31 days in Jan/Mar/May etc.)
   const expirationDate = new Date(lastFlightDate);
-  expirationDate.setDate(expirationDate.getDate() + currency.validityDays);
+  if (currency.validityDays === 30) {
+    expirationDate.setMonth(expirationDate.getMonth() + 1);
+  } else {
+    expirationDate.setDate(expirationDate.getDate() + currency.validityDays);
+  }
   
   // Calculate days remaining
   const today = new Date();
