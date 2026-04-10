@@ -42,19 +42,14 @@ workflows:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             ENABLE_BITCODE=NO \
-            COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee "$HOME/xbuild.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)|warning: .*error" || true
-          echo "xcodebuild done"
+            COMPILER_INDEX_STORE_ENABLE=NO > "$HOME/xbuild.log" 2>&1
+          tail -3 "$HOME/xbuild.log"
 
-          echo "=== Searching for .app in $DERIVED ==="
-          find "$DERIVED" -name "*.app" -type d 2>/dev/null | head -20
-          echo "=== ls Release-iphoneos ==="
-          ls "$DERIVED/Build/Products/Release-iphoneos/" 2>/dev/null | head -20
-
-          APP=$(find "$DERIVED" -name "FlightHoursTracker.app" -type d 2>/dev/null | head -1)
+          APP=$(find "$DERIVED/Build/Products/Release-iphoneos" -maxdepth 1 -name "*.app" -type d 2>/dev/null | head -1)
           echo "APP=[$APP]"
-
           if [ -z "$APP" ]; then
-            echo "No .app found"
+            echo "No .app found. Contents:"
+            ls "$DERIVED/Build/Products/Release-iphoneos/" 2>/dev/null
             exit 1
           fi
 
