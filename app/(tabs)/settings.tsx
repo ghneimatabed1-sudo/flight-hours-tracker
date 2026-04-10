@@ -704,7 +704,7 @@ export default function SettingsScreen() {
                             placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
-                autoCapitalize="characters"
+                autoCapitalize="none"
                           />
                           {dateErrors[index] ? (
                             <Text className="text-xs text-error mt-1">
@@ -1314,7 +1314,7 @@ export default function SettingsScreen() {
               placeholderTextColor={colors.muted}
               autoComplete="off"
               autoCorrect={false}
-              autoCapitalize="characters"
+              autoCapitalize="none"
               multiline
               numberOfLines={3}
               className="bg-surface border border-border rounded-xl px-4 py-3 text-foreground mb-4"

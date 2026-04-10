@@ -73,7 +73,7 @@ export function calculateCurrencyStatus(
     };
   }
   
-  // FLIGHT-BASED CURRENCIES (Day, Night, NVG, IRT)
+  // FLIGHT-BASED CURRENCIES (Day, Night, NVG)
   // Find the most recent flight for this currency type
   const relevantFlights = flights.filter((flight) => {
     switch (currency.type) {
