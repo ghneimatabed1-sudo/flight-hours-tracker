@@ -20,37 +20,43 @@ workflows:
 
       - name: Expo prebuild (iOS)
         script: |
-          set -e
           npx expo prebuild --platform ios --clean
-          echo "Prebuild done. iOS folder contents:"
-          ls ios/
+          echo "=== iOS folder after prebuild ==="
+          ls -la ios/ || echo "No ios folder!"
+          ls ios/*.xcworkspace 2>/dev/null || echo "No xcworkspace found!"
 
       - name: Build unsigned IPA
         script: |
-          set -e
-          WORKSPACE=$(ls ios/*.xcworkspace | head -1)
-          SCHEME=$(xcodebuild -workspace "$WORKSPACE" -list 2>/dev/null | grep -A 20 "Schemes:" | grep -v "Schemes:" | grep -v "^$" | head -1 | xargs)
+          WORKSPACE=$(find ios -name "*.xcworkspace" -maxdepth 2 | head -1)
+          if [ -z "$WORKSPACE" ]; then
+            echo "ERROR: No xcworkspace found in ios/"
+            ls -la ios/ 2>/dev/null
+            exit 1
+          fi
+          SCHEME=$(xcodebuild -workspace "$WORKSPACE" -list 2>&1 | grep -A 20 "Schemes:" | grep -v "Schemes:" | grep -v "^$" | head -1 | xargs)
           echo "Workspace: $WORKSPACE"
           echo "Scheme: $SCHEME"
 
-          xcodebuild archive \
+          # Build to DerivedData (avoids archive signing issues)
+          xcodebuild build \
             -workspace "$WORKSPACE" \
             -scheme "$SCHEME" \
             -configuration Release \
-            -archivePath "$CM_BUILD_DIR/App.xcarchive" \
+            -sdk iphoneos \
+            -derivedDataPath "$CM_BUILD_DIR/DerivedData" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            ENABLE_BITCODE=NO 2>&1
+            ENABLE_BITCODE=NO 2>&1 | tail -50
 
-          echo "Archive contents:"
-          find "$CM_BUILD_DIR/App.xcarchive" -name "*.app" 2>/dev/null
+          echo "=== Finding built .app ==="
+          find "$CM_BUILD_DIR/DerivedData" -name "*.app" 2>/dev/null
 
-          APP_PATH=$(find "$CM_BUILD_DIR/App.xcarchive" -name "*.app" -maxdepth 5 | head -1)
-          echo "App found at: $APP_PATH"
+          APP=$(find "$CM_BUILD_DIR/DerivedData" -name "*.app" -not -path "*/Index.noindex/*" | head -1)
+          echo "App: $APP"
 
           mkdir -p "$CM_BUILD_DIR/Payload"
-          cp -r "$APP_PATH" "$CM_BUILD_DIR/Payload/"
+          cp -r "$APP" "$CM_BUILD_DIR/Payload/"
           cd "$CM_BUILD_DIR" && zip -r FlightHoursTracker.ipa Payload/
           ls -lh FlightHoursTracker.ipa
 
