@@ -59,16 +59,21 @@ workflows:
             exit 1
           fi
 
-          APP=$(find "$CM_BUILD_DIR/DerivedData/Build/Products" -name "*.app" -maxdepth 3 | head -1)
+          echo "=== Products directory ==="
+          ls "$CM_BUILD_DIR/DerivedData/Build/Products/" 2>/dev/null || echo "No Products dir"
+          ls "$CM_BUILD_DIR/DerivedData/Build/Products/Release-iphoneos/" 2>/dev/null | head -20
+
+          APP=$(find "$CM_BUILD_DIR/DerivedData/Build/Products/Release-iphoneos" -maxdepth 1 -name "*.app" 2>/dev/null | head -1)
           if [ -z "$APP" ]; then
-            echo "ERROR: No .app found in DerivedData"
-            find "$CM_BUILD_DIR/DerivedData/Build" -maxdepth 4 2>/dev/null
+            echo "ERROR: No .app in Release-iphoneos. All .app files:"
+            find "$CM_BUILD_DIR/DerivedData" -name "*.app" 2>/dev/null
             exit 1
           fi
-          echo "App: $APP"
+          echo "App found: $APP"
 
           mkdir -p "$CM_BUILD_DIR/Payload"
           cp -r "$APP" "$CM_BUILD_DIR/Payload/"
+          ls "$CM_BUILD_DIR/Payload/"
           cd "$CM_BUILD_DIR" && zip -r FlightHoursTracker.ipa Payload/
           ls -lh FlightHoursTracker.ipa
 
