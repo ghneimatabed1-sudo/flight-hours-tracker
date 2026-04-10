@@ -28,7 +28,8 @@ workflows:
       - name: Build unsigned IPA
         script: |
           set -e
-          WORKSPACE=$(find ios -name "*.xcworkspace" -maxdepth 2 | head -1)
+          # Must use the CocoaPods workspace (ios/*.xcworkspace), NOT xcodeproj/project.xcworkspace
+          WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" | head -1)
           if [ -z "$WORKSPACE" ]; then
             echo "ERROR: No xcworkspace found!"
             ls -la ios/ 2>/dev/null || echo "No ios folder either"
