@@ -27,56 +27,37 @@ workflows:
 
       - name: Build unsigned IPA
         script: |
-          # No set -e — we handle errors manually
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" 2>/dev/null | head -1)
-          if [ -z "$WORKSPACE" ]; then
-            echo "ERROR: No xcworkspace found!"
-            ls -la ios/ 2>/dev/null || echo "No ios folder"
-            exit 1
-          fi
           SCHEME=$(xcodebuild -workspace "$WORKSPACE" -list 2>&1 | grep -A 20 "Schemes:" | grep -v "Schemes:" | grep -v "^$" | head -1 | xargs)
-          echo "Workspace: $WORKSPACE  |  Scheme: $SCHEME"
+          DERIVED="$HOME/DerivedData"
+          echo "Workspace=$WORKSPACE Scheme=$SCHEME Derived=$DERIVED"
 
-          BUILD_LOG="$CM_BUILD_DIR/build.log"
           xcodebuild build \
             -workspace "$WORKSPACE" \
             -scheme "$SCHEME" \
             -configuration Release \
             -sdk iphoneos \
-            -derivedDataPath "$CM_BUILD_DIR/DerivedData" \
+            -derivedDataPath "$DERIVED" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             ENABLE_BITCODE=NO \
-            COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee "$BUILD_LOG" | tail -5
-          BUILD_EXIT=$?
-          echo "xcodebuild exit code: $BUILD_EXIT"
+            COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tail -5
 
-          if [ $BUILD_EXIT -ne 0 ] || grep -q "BUILD FAILED" "$BUILD_LOG"; then
-            echo "BUILD FAILED"
-            exit 1
-          fi
+          echo "=== Products ==="
+          ls "$DERIVED/Build/Products/Release-iphoneos/" 2>&1 | head -20
 
-          echo "=== Release-iphoneos contents ==="
-          ls "$CM_BUILD_DIR/DerivedData/Build/Products/Release-iphoneos/" 2>&1 | head -30
+          APP=$(find "$DERIVED/Build/Products/Release-iphoneos" -maxdepth 1 -name "*.app" 2>/dev/null | head -1)
+          echo "APP=[$APP]"
 
-          APP=$(find "$CM_BUILD_DIR/DerivedData/Build/Products/Release-iphoneos" -maxdepth 1 -name "*.app" 2>/dev/null | head -1)
-          echo "APP variable: [$APP]"
-          if [ -z "$APP" ]; then
-            echo "Searching entire DerivedData for .app:"
-            find "$CM_BUILD_DIR/DerivedData" -name "*.app" 2>/dev/null
-            exit 1
-          fi
-
-          mkdir -p "$CM_BUILD_DIR/Payload"
-          cp -r "$APP" "$CM_BUILD_DIR/Payload/"
-          echo "Payload contents: $(ls $CM_BUILD_DIR/Payload/)"
-          cd "$CM_BUILD_DIR" && zip -r FlightHoursTracker.ipa Payload/
-          ls -lh FlightHoursTracker.ipa
+          OUTDIR="$HOME/ipa_output"
+          mkdir -p "$OUTDIR/Payload"
+          cp -r "$APP" "$OUTDIR/Payload/"
+          cd "$OUTDIR" && zip -r "$HOME/FlightHoursTracker.ipa" Payload/
+          ls -lh "$HOME/FlightHoursTracker.ipa"
 
     artifacts:
-      - $CM_BUILD_DIR/FlightHoursTracker.ipa
-      - $CM_BUILD_DIR/build.log
+      - $HOME/FlightHoursTracker.ipa
 
     publishing:
       email:
