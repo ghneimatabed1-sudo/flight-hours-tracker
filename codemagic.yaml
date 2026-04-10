@@ -73,6 +73,7 @@ workflows:
 
     artifacts:
       - $CM_BUILD_DIR/FlightHoursTracker.ipa
+      - $CM_BUILD_DIR/build.log
 
     publishing:
       email:
