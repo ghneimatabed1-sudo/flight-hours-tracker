@@ -8,7 +8,25 @@
       "Bash(wait)",
       "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type}\" http://localhost:11000/)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:11000/)",
-      "Bash(curl -s http://localhost:11000/)"
+      "Bash(curl -s http://localhost:11000/)",
+      "Bash(eas --version)",
+      "Bash(eas init:*)",
+      "Bash(eas build:*)",
+      "Bash(eas build:list --platform android --limit 3 --non-interactive)",
+      "Bash(eas build:list --platform android --limit 3)",
+      "Bash(eas build:list --platform android --limit 5 --json)",
+      "Bash(eas build:list --platform android --limit 2)",
+      "Bash(node -e ':*)",
+      "Bash(eas build:list --platform android --limit 1)",
+      "Bash(node -e \"const d=JSON.parse\\(require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\)\\); d.forEach\\(b=>console.log\\(b.id, b.status, b.gitCommitHash?.slice\\(0,7\\)\\)\\)\")",
+      "Bash(eas build:list --platform android --limit 5)",
+      "Read(//tmp/**)",
+      "Bash(jobs)",
+      "Bash(sed -n '145,175p' \"app/\\(tabs\\)/settings.tsx\")",
+      "Bash(sed -n '900,1000p' \"app/\\(tabs\\)/settings.tsx\")",
+      "Bash(npm list:*)",
+      "Bash(eas build:list --platform android --limit 1 --json)",
+      "Bash(python -c \"import sys,json; builds=json.load\\(sys.stdin\\); b=builds[0]; print\\('Status:', b['status']\\); print\\('Error:', b.get\\('error', {}\\)\\)\")"
     ]
   }
 }
