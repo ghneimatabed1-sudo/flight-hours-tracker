@@ -30,26 +30,39 @@ workflows:
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" 2>/dev/null | head -1)
           SCHEME=$(xcodebuild -workspace "$WORKSPACE" -list 2>&1 | grep -A 20 "Schemes:" | grep -v "Schemes:" | grep -v "^$" | head -1 | xargs)
           DERIVED="$HOME/DerivedData"
+          ARCHIVE="$HOME/FlightHoursTracker.xcarchive"
           echo "Workspace=$WORKSPACE Scheme=$SCHEME Derived=$DERIVED"
 
-          xcodebuild build \
+          xcodebuild archive \
             -workspace "$WORKSPACE" \
             -scheme "$SCHEME" \
             -configuration Release \
             -sdk iphoneos \
+            -archivePath "$ARCHIVE" \
             -derivedDataPath "$DERIVED" \
-            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE="" \
             ENABLE_BITCODE=NO \
             COMPILER_INDEX_STORE_ENABLE=NO > "$HOME/xbuild.log" 2>&1
-          tail -3 "$HOME/xbuild.log"
+          BUILD_EXIT=$?
+          tail -5 "$HOME/xbuild.log"
+          echo "xcodebuild exit code: $BUILD_EXIT"
 
-          APP=$(find "$DERIVED/Build/Products/Release-iphoneos" -maxdepth 1 -name "*.app" -type d 2>/dev/null | head -1)
+          if [ $BUILD_EXIT -ne 0 ]; then
+            echo "xcodebuild archive FAILED"
+            exit 1
+          fi
+
+          APP=$(find "$ARCHIVE/Products/Applications" -maxdepth 1 -name "*.app" -type d 2>/dev/null | head -1)
           echo "APP=[$APP]"
           if [ -z "$APP" ]; then
-            echo "No .app found. Contents:"
-            ls "$DERIVED/Build/Products/Release-iphoneos/" 2>/dev/null
+            echo "Archive products:"
+            find "$ARCHIVE" -name "*.app" -type d 2>/dev/null
+            echo "DerivedData products:"
+            find "$DERIVED/Build/Products" -maxdepth 2 -name "*.app" -type d 2>/dev/null
             exit 1
           fi
 
