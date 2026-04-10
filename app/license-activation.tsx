@@ -80,7 +80,7 @@ export default function LicenseActivationScreen() {
               onChangeText={setLicenseKey}
               placeholder="FHT-XXXXX-XXXXX-XXXXX"
               placeholderTextColor={colors.muted}
-              autoCapitalize="characters"
+              autoCapitalize="none"
               autoCorrect={false}
               autoComplete="off"
               className="bg-background border-2 border-border rounded-xl px-4 py-3 text-foreground font-mono"
