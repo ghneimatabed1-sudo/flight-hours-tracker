@@ -1,0 +1,101 @@
+workflows:
+
+  # ─────────────────────────────────────────────
+  # Android APK build
+  # ─────────────────────────────────────────────
+  android-apk:
+    name: Android APK
+    max_build_duration: 60
+    instance_type: linux_x2
+
+    environment:
+      node: 18.20.4
+      vars:
+        BUNDLE_ID: space.manus.flight.hours.tracker.t20260120194129
+
+    scripts:
+      - name: Install pnpm
+        script: npm install -g pnpm@9.12.0
+
+      - name: Install dependencies
+        script: pnpm install --frozen-lockfile
+
+      - name: Expo prebuild (Android)
+        script: npx expo prebuild --platform android --clean
+
+      - name: Build APK
+        script: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+    artifacts:
+      - android/app/build/outputs/apk/release/*.apk
+
+    publishing:
+      email:
+        recipients:
+          - ghneimatabed1@icloud.com
+        notify:
+          success: true
+          failure: true
+
+  # ─────────────────────────────────────────────
+  # iOS IPA build
+  # Requires Apple Developer Program ($99/yr)
+  # Set these in Codemagic → App → Environment Variables:
+  #   APP_STORE_CONNECT_ISSUER_ID
+  #   APP_STORE_CONNECT_KEY_IDENTIFIER
+  #   APP_STORE_CONNECT_PRIVATE_KEY  (base64 encoded)
+  #   CERTIFICATE_PRIVATE_KEY        (base64 encoded)
+  # ─────────────────────────────────────────────
+  ios-ipa:
+    name: iOS IPA
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    integrations:
+      app_store_connect: codemagic_api_key
+
+    environment:
+      node: 18.20.4
+      ios_signing:
+        distribution_type: development
+        bundle_identifier: space.manus.flight.hours.tracker.t20260120194129
+      vars:
+        BUNDLE_ID: space.manus.flight.hours.tracker.t20260120194129
+        XCODE_WORKSPACE: FlightHoursTracker.xcworkspace
+        XCODE_SCHEME: FlightHoursTracker
+
+    scripts:
+      - name: Install pnpm
+        script: npm install -g pnpm@9.12.0
+
+      - name: Install dependencies
+        script: pnpm install --frozen-lockfile
+
+      - name: Expo prebuild (iOS)
+        script: npx expo prebuild --platform ios --clean
+
+      - name: Install CocoaPods
+        script: |
+          cd ios
+          pod install
+
+      - name: Build IPA
+        script: |
+          xcode-project use-profiles
+          xcode-project build-ipa \
+            --workspace ios/$XCODE_WORKSPACE \
+            --scheme $XCODE_SCHEME
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+
+    publishing:
+      email:
+        recipients:
+          - ghneimatabed1@icloud.com
+        notify:
+          success: true
+          failure: true
