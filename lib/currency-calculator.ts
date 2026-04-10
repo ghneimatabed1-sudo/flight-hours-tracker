@@ -108,16 +108,22 @@ export function calculateCurrencyStatus(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
     lastFlightDate = new Date(sortedFlights[0].date);
-  } else if (initialHours) {
-    // Check initial hours baseline dates
+  }
+
+  // Also check initialHours baseline — use whichever is more recent
+  if (initialHours) {
+    let baselineDate: Date | null = null;
     if (currency.type === "day" && initialHours.lastDayFlyingDate) {
-      lastFlightDate = new Date(initialHours.lastDayFlyingDate);
+      baselineDate = new Date(initialHours.lastDayFlyingDate);
     } else if (currency.type === "night" && initialHours.lastNightFlying === "night" && initialHours.lastNightFlyingDate) {
-      lastFlightDate = new Date(initialHours.lastNightFlyingDate);
+      baselineDate = new Date(initialHours.lastNightFlyingDate);
     } else if (currency.type === "nvg" && initialHours.lastNightFlying === "nvg" && initialHours.lastNightFlyingDate) {
-      lastFlightDate = new Date(initialHours.lastNightFlyingDate);
+      baselineDate = new Date(initialHours.lastNightFlyingDate);
     } else if (currency.type === "irt" && initialHours.lastIRTFlyingDate) {
-      lastFlightDate = new Date(initialHours.lastIRTFlyingDate);
+      baselineDate = new Date(initialHours.lastIRTFlyingDate);
+    }
+    if (baselineDate && (!lastFlightDate || baselineDate > lastFlightDate)) {
+      lastFlightDate = baselineDate;
     }
   }
 
