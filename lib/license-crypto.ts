@@ -43,10 +43,12 @@ export function generateLicenseKey(
 export function verifyLicenseKey(licenseKey: string): LicenseKeyData | null {
   try {
     if (!licenseKey.startsWith("FHT-")) return null;
-    const parts = licenseKey.split("-");
-    if (parts.length !== 3) return null;
+    const withoutPrefix = licenseKey.slice(4); // remove "FHT-"
+    const lastDash = withoutPrefix.lastIndexOf("-");
+    if (lastDash === -1) return null;
 
-    const [, payloadEncoded, signatureProvided] = parts;
+    const payloadEncoded = withoutPrefix.slice(0, lastDash);
+    const signatureProvided = withoutPrefix.slice(lastDash + 1);
     const payload = base64Decode(payloadEncoded);
     const [expirationISO, username, generatedAt] = payload.split("|");
 
