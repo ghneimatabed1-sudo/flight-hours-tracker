@@ -27,7 +27,6 @@ workflows:
 
       - name: Build unsigned IPA
         script: |
-          set -exo pipefail
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" 2>/dev/null | head -1)
           SCHEME=$(xcodebuild -workspace "$WORKSPACE" -list 2>&1 | grep -A 20 "Schemes:" | grep -v "Schemes:" | grep -v "^$" | head -1 | xargs)
           DERIVED="$HOME/DerivedData"
@@ -43,14 +42,21 @@ workflows:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             ENABLE_BITCODE=NO \
-            COMPILER_INDEX_STORE_ENABLE=NO
+            COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee "$HOME/xbuild.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)|warning: .*error" || true
+          echo "xcodebuild done"
 
-          echo "=== Searching for .app ==="
-          find "$DERIVED" -name "FlightHoursTracker.app" -type d 2>/dev/null
+          echo "=== Searching for .app in $DERIVED ==="
+          find "$DERIVED" -name "*.app" -type d 2>/dev/null | head -20
+          echo "=== ls Release-iphoneos ==="
+          ls "$DERIVED/Build/Products/Release-iphoneos/" 2>/dev/null | head -20
 
-          APP=$(find "$DERIVED" -name "FlightHoursTracker.app" -type d 2>/dev/null | grep -v "\.xctest" | head -1)
+          APP=$(find "$DERIVED" -name "FlightHoursTracker.app" -type d 2>/dev/null | head -1)
           echo "APP=[$APP]"
-          test -d "$APP"
+
+          if [ -z "$APP" ]; then
+            echo "No .app found"
+            exit 1
+          fi
 
           mkdir -p "$HOME/Payload"
           cp -r "$APP" "$HOME/Payload/"
@@ -59,6 +65,7 @@ workflows:
 
     artifacts:
       - $HOME/FlightHoursTracker.ipa
+      - $HOME/xbuild.log
 
     publishing:
       email:
