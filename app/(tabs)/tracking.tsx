@@ -140,7 +140,7 @@ export default function TrackingScreen() {
 
   const handleExportGrandTotal = async () => {
     try {
-      const totals = calculateGrandTotals(flights);
+      const totals = calculateGrandTotals(flights, initialHours);
       await exportToExcel({
         flights,
         totals,

@@ -111,19 +111,5 @@ export interface GrandTotals extends FlightTotals {
   cumulativeTotal: number;
 }
 
-/**
- * Initial Hours: Baseline flight hours accumulated before using this app
- * These values add to totals but do NOT affect currency or expiration calculations
- */
-export interface InitialHours {
-  totalHours: number;
-  dayHours: number;
-  nightHours: number;
-  nvgHours: number;
-  instrumentHours: number;
-  captainHours: number;
-  copilotHours: number;
-  dualDayHours: number;
-  dualNightHours: number;
-  dualNVGHours: number;
-}
+// InitialHours is defined in @/types/initial-hours — do not duplicate here
+export type { InitialHours } from "@/types/initial-hours";

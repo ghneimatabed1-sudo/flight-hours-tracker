@@ -116,6 +116,7 @@ export default function AddFlightScreen() {
       setType("act");
       setInstrumentFlight(false);
       setSimulationTime("");
+      setActualHours("");
       setIlsCount("");
       setVorCount("");
 

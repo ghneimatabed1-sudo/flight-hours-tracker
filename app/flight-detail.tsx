@@ -27,6 +27,7 @@ export default function FlightDetailScreen() {
   const [flight, setFlight] = useState<Flight | null>(null);
 
   const [date, setDate] = useState("");
+  const [dateRaw, setDateRaw] = useState("");
   const [aircraftType, setAircraftType] = useState("UH-60M");
   const [aircraftNumber, setAircraftNumber] = useState("");
   const [captainName, setCaptainName] = useState("");
@@ -53,6 +54,8 @@ export default function FlightDetailScreen() {
     if (foundFlight) {
       setFlight(foundFlight);
       setDate(foundFlight.date);
+      const _d = new Date(foundFlight.date);
+      setDateRaw(`${String(_d.getDate()).padStart(2,"0")}/${String(_d.getMonth()+1).padStart(2,"0")}/${_d.getFullYear()}`);
       setAircraftType(foundFlight.aircraftType);
       setAircraftNumber(foundFlight.aircraftNumber);
       setCaptainName(foundFlight.captainName);
@@ -213,14 +216,31 @@ export default function FlightDetailScreen() {
             <View>
               <Text className="text-sm text-muted mb-2">Date *</Text>
               <TextInput
-                value={date}
-                onChangeText={setDate}
-                placeholder="YYYY-MM-DD"
+                value={dateRaw}
+                onChangeText={(text) => {
+                  const digits = text.replace(/\D/g, "").slice(0, 8);
+                  if (digits.length >= 2 && parseInt(digits.slice(0,2), 10) > 31) return;
+                  if (digits.length >= 4 && parseInt(digits.slice(2,4), 10) > 12) return;
+                  let formatted = digits;
+                  if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
+                  else if (digits.length > 2) formatted = digits.slice(0,2) + "/" + digits.slice(2);
+                  setDateRaw(formatted);
+                  if (digits.length === 8) {
+                    const d = parseInt(digits.slice(0,2), 10);
+                    const m = parseInt(digits.slice(2,4), 10);
+                    const y = parseInt(digits.slice(4,8), 10);
+                    if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
+                      setDate(new Date(y, m-1, d).toISOString().split("T")[0]);
+                    }
+                  }
+                }}
+                placeholder="DD/MM/YYYY"
+                keyboardType="number-pad"
                 className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
                 placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
-                autoCapitalize="characters"
+                autoCapitalize="none"
               />
             </View>
 
@@ -609,7 +629,7 @@ export default function FlightDetailScreen() {
                         setTimeout(() => {
                           Alert.alert(
                             "IRT Flight Deleted",
-                            "تم حذف رحلة IRT. يرجى تحديث تاريخ IRT Currency يدويًا في Settings.",
+                            "IRT flight deleted. Please update the IRT Test Date manually in Settings → Currencies.",
                             [{ text: "OK" }]
                           );
                         }, 500);
