@@ -28,7 +28,7 @@ workflows:
       - name: Build unsigned IPA
         script: |
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" 2>/dev/null | head -1)
-          SCHEME=$(xcodebuild -workspace "$WORKSPACE" -list 2>&1 | grep -A 20 "Schemes:" | grep -v "Schemes:" | grep -v "^$" | head -1 | xargs)
+          SCHEME="FlightHoursTracker"
           DERIVED="$HOME/DerivedData"
           ARCHIVE="$HOME/FlightHoursTracker.xcarchive"
           echo "Workspace=$WORKSPACE Scheme=$SCHEME Derived=$DERIVED"
