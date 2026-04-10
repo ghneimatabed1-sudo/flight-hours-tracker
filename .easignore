@@ -8,3 +8,12 @@ __tests__
 .env.*.local
 server
 scripts
+ad/
+New folder/
+*.apk
+*.ipa
+*.exe
+*.dll
+*.zip
+*.pdf
+BPA_COMPLETE_PLAN.pdf
