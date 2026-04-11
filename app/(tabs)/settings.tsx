@@ -521,6 +521,46 @@ export default function SettingsScreen() {
                   🔄 Renew License
                 </Text>
               </TouchableOpacity>
+
+              {/* Clear License Button */}
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert(
+                    "Clear License?",
+                    "This will delete your current license. You'll need to activate a new one.",
+                    [
+                      {
+                        text: "Cancel",
+                        onPress: () => {},
+                        style: "cancel",
+                      },
+                      {
+                        text: "Clear",
+                        onPress: async () => {
+                          await clearLicense();
+                          // Refresh status
+                          const status = await checkLicenseStatus();
+                          setLicenseStatus({
+                            valid: status.valid,
+                            expired: status.expired,
+                            expiringSoon: status.expiringSoon,
+                            daysRemaining: status.daysRemaining,
+                            username: status.data?.username,
+                            expirationDate: status.data?.expirationDate,
+                          });
+                          Alert.alert("License Cleared", "Your license has been deleted. Please activate a new one.");
+                        },
+                        style: "destructive",
+                      },
+                    ]
+                  );
+                }}
+                className="mt-3 bg-error/20 px-6 py-3 rounded-full active:opacity-80 border border-error/30"
+              >
+                <Text className="text-error font-semibold text-center">
+                  🗑️ Clear License
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
 
