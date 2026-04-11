@@ -383,19 +383,19 @@ export default function SettingsScreen() {
             <Text className="text-base text-muted mt-1">Configure your flight tracker</Text>
           </View>
 
-          {/* Flight Name Section */}
+          {/* Pilot Name Section */}
           <View className="bg-surface rounded-2xl p-5 border border-border">
             <Text className="text-lg font-semibold text-foreground mb-4">
-              Flight/Aircraft Identifier
+              Pilot Name
             </Text>
             <Text className="text-sm text-muted mb-3">
-              This name will be displayed at the top of all screens. All characters will be
+              Your name will be displayed at the top of all screens. All characters will be
               automatically converted to UPPERCASE.
             </Text>
             <TextInput
               value={flightName}
               onChangeText={(text) => setFlightName(text.toUpperCase())}
-              placeholder="Enter flight name (e.g., HAWK-01)"
+              placeholder="Enter pilot name (e.g., CAPT. SMITH)"
               className="bg-background border border-border rounded-lg px-4 py-3 text-foreground text-lg font-bold mb-4"
               placeholderTextColor={colors.muted}
               autoComplete="off"
@@ -410,7 +410,7 @@ export default function SettingsScreen() {
               }`}
             >
               <Text className="text-background font-bold">
-                {saving ? "Saving..." : "Save Flight Name"}
+                {saving ? "Saving..." : "Save Pilot Name"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -1237,34 +1237,6 @@ export default function SettingsScreen() {
                 </View>
               </>
             )}
-          </View>
-
-          {/* Theme Settings Section */}
-          <View className="bg-surface rounded-2xl p-5 border border-border">
-            <Text className="text-lg font-semibold text-foreground mb-3">
-              Theme
-            </Text>
-            <Text className="text-sm text-muted mb-3">
-              Switch between Default and Dark modes
-            </Text>
-            <View className="flex-row gap-2">
-              <TouchableOpacity
-                className={`flex-1 py-2 rounded-lg border ${settings.theme === "default" ? "bg-primary border-primary" : "bg-background border-border"}`}
-                onPress={() => updateTheme("default")}
-              >
-                <Text className={`text-center font-semibold ${settings.theme === "default" ? "text-background" : "text-foreground"}`}>
-                  Default
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className={`flex-1 py-2 rounded-lg border ${settings.theme === "dark" ? "bg-primary border-primary" : "bg-background border-border"}`}
-                onPress={() => updateTheme("dark")}
-              >
-                <Text className={`text-center font-semibold ${settings.theme === "dark" ? "text-background" : "text-foreground"}`}>
-                  Dark
-                </Text>
-              </TouchableOpacity>
-            </View>
           </View>
 
           {/* Credits Section */}
