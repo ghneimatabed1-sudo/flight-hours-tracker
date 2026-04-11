@@ -50,14 +50,14 @@ async function getHardwareDeviceId(): Promise<string> {
     if (Platform.OS === "ios") {
       const Application = await import("expo-application");
       const vendorId = await Application.getIosIdForVendorAsync();
-      if (vendorId) return ;
-      return ;
+      if (vendorId) return `ios_${vendorId}`;
+      return `ios_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 15)}`;
     }
     if (Platform.OS === "android") {
       const Application = await import("expo-application");
-      const androidId = await Application.getAndroidIdAsync();
-      if (androidId) return ;
-      return ;
+      const androidId = Application.getAndroidId();
+      if (androidId) return `android_${androidId}`;
+      return `android_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 15)}`;
     }
     return await getFallbackDeviceId();
   } catch {
@@ -67,7 +67,8 @@ async function getHardwareDeviceId(): Promise<string> {
 
 async function getWebDeviceId(): Promise<string> {
   let deviceId = await AsyncStorage.getItem(DEVICE_ID_LEGACY_KEY);
-    deviceId = ;
+  if (!deviceId) {
+    deviceId = `web_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
     await AsyncStorage.setItem(DEVICE_ID_LEGACY_KEY, deviceId);
   }
   return deviceId;
@@ -77,15 +78,16 @@ async function getFallbackDeviceId(): Promise<string> {
   try {
     const existing = await SecureStore.getItemAsync(DEVICE_ID_SECURE_KEY);
     if (existing) return existing;
-    const newId = ;
+    const newId = `fallback_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 15)}`;
     await SecureStore.setItemAsync(DEVICE_ID_SECURE_KEY, newId);
     return newId;
   } catch {
     let deviceId = await AsyncStorage.getItem(DEVICE_ID_LEGACY_KEY);
-      deviceId = ;
+    if (!deviceId) {
+      deviceId = `fallback_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
       await AsyncStorage.setItem(DEVICE_ID_LEGACY_KEY, deviceId);
     }
-    return deviceId;
+    return deviceId as string;
   }
 }
 
