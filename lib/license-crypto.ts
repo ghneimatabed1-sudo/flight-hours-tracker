@@ -36,7 +36,7 @@ export function generateLicenseKey(
   const expirationDate = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
   const payload = `${expirationDate.toISOString()}|${username || ""}|${now.toISOString()}`;
   const payloadEncoded = base64Encode(payload);
-  const signature = hmacSha256(payload, _k); // full 64-char HMAC
+  const signature = hmacSha256(payload, _k).substring(0, 16);
   return `FHT-${payloadEncoded}-${signature}`;
 }
 
@@ -55,7 +55,7 @@ export function verifyLicenseKey(licenseKey: string): LicenseKeyData | null {
     const [expirationISO, username, generatedAt] = parts;
     if (!expirationISO || !generatedAt) return null;
 
-    const signatureExpected = hmacSha256(payload, _k); // full 64-char HMAC
+    const signatureExpected = hmacSha256(payload, _k).substring(0, 16);
     if (signatureProvided !== signatureExpected) return null;
 
     return {
