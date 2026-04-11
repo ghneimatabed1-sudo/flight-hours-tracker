@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js';
 import { encode as base64EncodeLib, decode as base64DecodeLib } from 'base-64';
 
-const _k = "FHT_SECRET_2026_CHANGE_THIS_TO_YOUR_OWN_RANDOM_STRING_12345";
+const _k = "Xv8$rK2!mP9qL4@nZ7^wA3#hB6&jD1*fE5+gC0~yU";
 
 function hmacSha256(message: string, key: string): string {
   const hmac = CryptoJS.HmacSHA256(message, key);
@@ -36,7 +36,7 @@ export function generateLicenseKey(
   const expirationDate = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
   const payload = `${expirationDate.toISOString()}|${username || ""}|${now.toISOString()}`;
   const payloadEncoded = base64Encode(payload);
-  const signature = hmacSha256(payload, _k).substring(0, 16);
+  const signature = hmacSha256(payload, _k); // full 64-char HMAC
   return `FHT-${payloadEncoded}-${signature}`;
 }
 
@@ -50,9 +50,12 @@ export function verifyLicenseKey(licenseKey: string): LicenseKeyData | null {
     const payloadEncoded = withoutPrefix.slice(0, lastDash);
     const signatureProvided = withoutPrefix.slice(lastDash + 1);
     const payload = base64Decode(payloadEncoded);
-    const [expirationISO, username, generatedAt] = payload.split("|");
+    const parts = payload.split("|");
+    if (parts.length !== 3) return null;
+    const [expirationISO, username, generatedAt] = parts;
+    if (!expirationISO || !generatedAt) return null;
 
-    const signatureExpected = hmacSha256(payload, _k).substring(0, 16);
+    const signatureExpected = hmacSha256(payload, _k); // full 64-char HMAC
     if (signatureProvided !== signatureExpected) return null;
 
     return {

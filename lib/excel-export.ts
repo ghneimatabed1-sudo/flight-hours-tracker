@@ -177,11 +177,12 @@ export async function exportToExcel(options: ExportOptions): Promise<void> {
   const wbout = XLSX.write(workbook, { type: "base64", bookType: "xlsx" });
 
   // Save and share file
-  const fileUri = `${FileSystem.documentDirectory!}${filename}.xlsx`;
+  if (!FileSystem.documentDirectory) throw new Error("Document directory unavailable");
+  const fileUri = `${FileSystem.documentDirectory}${filename}.xlsx`;
   
   try {
     await FileSystem.writeAsStringAsync(fileUri, wbout, {
-      encoding: "base64" as any,
+      encoding: FileSystem.EncodingType.Base64,
     });
 
     if (Platform.OS === "web") {
