@@ -23,9 +23,9 @@ export interface InitialHours {
   nvg2ndPlt: number;
 
   // Currency baseline dates - when was the last flight before using the app?
-  lastDayFlyingDate?: string; // ISO date string (e.g., "2024-01-15")
-  lastNightFlying?: "night" | "nvg"; // Was it night or NVG?
-  lastNightFlyingDate?: string; // ISO date string
+  lastDayFlyingDate?: string;   // ISO date string — last day flight
+  lastNightFlyingDate?: string; // ISO date string — last night flight (no NVG)
+  lastNVGFlyingDate?: string;   // ISO date string — last NVG flight
 }
 
 export const DEFAULT_INITIAL_HOURS: InitialHours = {
@@ -46,6 +46,6 @@ export const DEFAULT_INITIAL_HOURS: InitialHours = {
   nvg1stPlt: 0,
   nvg2ndPlt: 0,
   lastDayFlyingDate: undefined,
-  lastNightFlying: undefined,
   lastNightFlyingDate: undefined,
+  lastNVGFlyingDate: undefined,
 };

@@ -115,10 +115,10 @@ export function calculateCurrencyStatus(
     let baselineDate: Date | null = null;
     if (currency.type === "day" && initialHours.lastDayFlyingDate) {
       baselineDate = new Date(initialHours.lastDayFlyingDate);
-    } else if (currency.type === "night" && initialHours.lastNightFlying === "night" && initialHours.lastNightFlyingDate) {
+    } else if (currency.type === "night" && initialHours.lastNightFlyingDate) {
       baselineDate = new Date(initialHours.lastNightFlyingDate);
-    } else if (currency.type === "nvg" && initialHours.lastNightFlying === "nvg" && initialHours.lastNightFlyingDate) {
-      baselineDate = new Date(initialHours.lastNightFlyingDate);
+    } else if (currency.type === "nvg" && initialHours.lastNVGFlyingDate) {
+      baselineDate = new Date(initialHours.lastNVGFlyingDate);
     }
     if (baselineDate && (!lastFlightDate || baselineDate > lastFlightDate)) {
       lastFlightDate = baselineDate;

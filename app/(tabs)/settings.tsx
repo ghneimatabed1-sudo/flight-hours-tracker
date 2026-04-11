@@ -38,6 +38,7 @@ export default function SettingsScreen() {
   const [tempInitialHours, setTempInitialHours] = useState(initialHours);
   const [dayDateRaw, setDayDateRaw] = useState("");
   const [nightDateRaw, setNightDateRaw] = useState("");
+  const [nvgDateRaw, setNvgDateRaw] = useState("");
   const [licenseStatus, setLicenseStatus] = useState<{
     valid: boolean;
     expired: boolean;
@@ -61,18 +62,13 @@ export default function SettingsScreen() {
 
   useEffect(() => {
     setTempInitialHours(initialHours);
-    if (initialHours.lastDayFlyingDate) {
-      const d = new Date(initialHours.lastDayFlyingDate);
-      setDayDateRaw(`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`);
-    } else {
-      setDayDateRaw("");
-    }
-    if (initialHours.lastNightFlyingDate) {
-      const d = new Date(initialHours.lastNightFlyingDate);
-      setNightDateRaw(`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`);
-    } else {
-      setNightDateRaw("");
-    }
+    const fmt = (iso: string) => {
+      const d = new Date(iso);
+      return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
+    };
+    setDayDateRaw(initialHours.lastDayFlyingDate ? fmt(initialHours.lastDayFlyingDate) : "");
+    setNightDateRaw(initialHours.lastNightFlyingDate ? fmt(initialHours.lastNightFlyingDate) : "");
+    setNvgDateRaw(initialHours.lastNVGFlyingDate ? fmt(initialHours.lastNVGFlyingDate) : "");
   }, [initialHours]);
 
   useEffect(() => {
@@ -1156,35 +1152,9 @@ export default function SettingsScreen() {
                       />
                     </View>
 
-                    {/* Last Night/NVG Flying */}
+                    {/* Last Night Flying Date */}
                     <View className="mt-3">
-                      <Text className="text-sm text-muted mb-2">When was your last night/NVG flying?</Text>
-
-                      {/* Night/NVG Toggle */}
-                      <View className="flex-row gap-2 mb-2">
-                        <TouchableOpacity
-                          className={`flex-1 py-2 rounded-lg border ${tempInitialHours.lastNightFlying === "night" ? "bg-primary border-primary" : "bg-background border-border"}`}
-                          onPress={() => {
-                            setTempInitialHours({ ...tempInitialHours, lastNightFlying: "night" });
-                          }}
-                        >
-                          <Text className={`text-center font-semibold ${tempInitialHours.lastNightFlying === "night" ? "text-background" : "text-foreground"}`}>
-                            Night
-                          </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          className={`flex-1 py-2 rounded-lg border ${tempInitialHours.lastNightFlying === "nvg" ? "bg-primary border-primary" : "bg-background border-border"}`}
-                          onPress={() => {
-                            setTempInitialHours({ ...tempInitialHours, lastNightFlying: "nvg" });
-                          }}
-                        >
-                          <Text className={`text-center font-semibold ${tempInitialHours.lastNightFlying === "nvg" ? "text-background" : "text-foreground"}`}>
-                            NVG
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-
-                      {/* Night/NVG Date Input */}
+                      <Text className="text-sm text-muted mb-1">When was your last NIGHT flying? (DD/MM/YYYY)</Text>
                       <TextInput
                         className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
                         value={nightDateRaw}
@@ -1204,6 +1174,37 @@ export default function SettingsScreen() {
                             const y = parseInt(digits.slice(4,8), 10);
                             if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
                               setTempInitialHours(prev => ({ ...prev, lastNightFlyingDate: new Date(y, m-1, d).toISOString().split("T")[0] }));
+                            }
+                          }
+                        }}
+                        placeholder="DD/MM/YYYY"
+                        placeholderTextColor={colors.muted}
+                        keyboardType="number-pad"
+                      />
+                    </View>
+
+                    {/* Last NVG Flying Date */}
+                    <View className="mt-3">
+                      <Text className="text-sm text-muted mb-1">When was your last NVG flying? (DD/MM/YYYY)</Text>
+                      <TextInput
+                        className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
+                        value={nvgDateRaw}
+                        onChangeText={(text) => {
+                          const digits = text.replace(/\D/g, "").slice(0, 8);
+                          if (digits.length >= 2 && parseInt(digits.slice(0,2), 10) > 31) return;
+                          if (digits.length >= 4 && parseInt(digits.slice(2,4), 10) > 12) return;
+                          let formatted = digits;
+                          if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
+                          else if (digits.length > 2) formatted = digits.slice(0,2) + "/" + digits.slice(2);
+                          setNvgDateRaw(formatted);
+                          if (digits.length === 0) {
+                            setTempInitialHours(prev => ({ ...prev, lastNVGFlyingDate: undefined }));
+                          } else if (digits.length === 8) {
+                            const d = parseInt(digits.slice(0,2), 10);
+                            const m = parseInt(digits.slice(2,4), 10);
+                            const y = parseInt(digits.slice(4,8), 10);
+                            if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
+                              setTempInitialHours(prev => ({ ...prev, lastNVGFlyingDate: new Date(y, m-1, d).toISOString().split("T")[0] }));
                             }
                           }
                         }}
