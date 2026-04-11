@@ -109,13 +109,19 @@ export default function SettingsScreen() {
     setCurrencies(newCurrencies);
   };
 
-  const handleToggleCurrencyVisibility = (index: number) => {
+  const handleToggleCurrencyVisibility = async (index: number) => {
     const newCurrencies = [...currencies];
     newCurrencies[index] = {
       ...newCurrencies[index],
       hidden: !newCurrencies[index].hidden,
     };
     setCurrencies(newCurrencies);
+    // Auto-save immediately so the change persists without requiring "Save" button
+    try {
+      await updateCurrencies(newCurrencies);
+    } catch (error) {
+      console.error("Failed to save currency visibility:", error);
+    }
   };
 
   const handleUpdateTestDate = (index: number, date: Date) => {
