@@ -57,25 +57,22 @@ export async function loadSettings(): Promise<AppSettings> {
     const stored = JSON.parse(data);
     // Merge stored currencies with defaults to handle missing fields from older versions
     const flightBased = ["day", "night", "nvg"];
-    let migrated = false;
     stored.currencies = DEFAULT_CURRENCIES.map((def) => {
       const found = (stored.currencies as Currency[] | undefined)?.find(
         (c) => c.type === def.type
       );
       if (!found) return def;
       const merged = { ...def, ...found };
-      // Migration: flight-based currencies should never carry the old 365-day default.
-      // Reset to current default AND flag for re-save so it persists.
-      if (flightBased.includes(def.type) && merged.validityDays === 365) {
-        merged.validityDays = def.validityDays;
-        migrated = true;
+      // Migration: flight-based currencies must never use 365 days (old default).
+      // Any value >= 365 on a flight-based currency is treated as a stale migration
+      // artifact and reset to the current default (30 days).
+      if (flightBased.includes(def.type) && merged.validityDays >= 365) {
+        merged.validityDays = def.validityDays; // reset to 30
       }
       return merged;
     });
-    // Persist migrated values immediately so they survive the next cold start
-    if (migrated) {
-      await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(stored));
-    }
+    // Always persist the merged/migrated currencies so they survive the next cold start
+    await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(stored));
     return stored;
   } catch (error) {
     console.error("Failed to load settings:", error);
