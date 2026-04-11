@@ -40,8 +40,10 @@ export function generateLicenseKey(
   return `FHT-${payloadEncoded}-${signature}`;
 }
 
-export function verifyLicenseKey(licenseKey: string): LicenseKeyData | null {
+export function verifyLicenseKey(rawKey: string): LicenseKeyData | null {
   try {
+    // Strip ALL whitespace (spaces, newlines, tabs) — multiline TextInput can add \n
+    const licenseKey = rawKey.replace(/\s/g, '');
     if (!licenseKey.startsWith("FHT-")) return null;
     const withoutPrefix = licenseKey.slice(4); // remove "FHT-"
     // FIXED: Signature is always exactly 16 hex characters.
