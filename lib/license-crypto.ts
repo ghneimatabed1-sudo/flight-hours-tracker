@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js';
 import { encode as base64EncodeLib, decode as base64DecodeLib } from 'base-64';
 
-const _k = "Xv8$rK2!mP9qL4@nZ7^wA3#hB6&jD1*fE5+gC0~yU";
+const _k = "FHT_SECRET_2026_CHANGE_THIS_TO_YOUR_OWN_RANDOM_STRING_12345";
 
 function hmacSha256(message: string, key: string): string {
   const hmac = CryptoJS.HmacSHA256(message, key);
@@ -46,14 +46,13 @@ export function verifyLicenseKey(rawKey: string): LicenseKeyData | null {
     const licenseKey = rawKey.replace(/\s/g, '');
     if (!licenseKey.startsWith("FHT-")) return null;
     const withoutPrefix = licenseKey.slice(4); // remove "FHT-"
-    // FIXED: Signature is always exactly 16 hex characters.
-    // Using lastIndexOf("-") was unreliable because the Base64-encoded payload
-    // can contain hyphens (from URL-safe Base64 encoding of ISO date strings).
-    // Instead, we extract the last 16 chars as the signature and everything
-    // before the last 17 chars (16 sig + 1 dash separator) as the payload.
-    if (withoutPrefix.length < 18) return null;
-    const signatureProvided = withoutPrefix.slice(-16);
-    const payloadEncoded = withoutPrefix.slice(0, -17);
+    // The key format is: FHT-{base64payload}-{16hexchars}
+    // The signature is always exactly 16 hex chars after the last dash.
+    const lastDash = withoutPrefix.lastIndexOf('-');
+    if (lastDash === -1) return null;
+    const payloadEncoded = withoutPrefix.slice(0, lastDash);
+    const signatureProvided = withoutPrefix.slice(lastDash + 1);
+    if (signatureProvided.length !== 16) return null;
     const payload = base64Decode(payloadEncoded);
     const parts = payload.split("|");
     if (parts.length !== 3) return null;
