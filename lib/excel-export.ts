@@ -138,7 +138,7 @@ export async function exportToExcel(options: ExportOptions): Promise<void> {
   const totalRow = [
     "TOTAL",
     "", "", "", "", "", "", "", "", "",
-    formatHours(flights.reduce((s, f) => s + f.flightTime, 0)),
+    formatHours(flights.reduce((s, f) => s + (f.flightTime || 0), 0)),
     formatHours(flights.reduce((s, f) => s + (f.dualHours || 0), 0)),
     "", "", "",
     flights.reduce((s, f) => s + (f.ilsCount || 0), 0),

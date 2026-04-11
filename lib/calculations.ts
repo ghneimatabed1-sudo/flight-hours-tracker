@@ -293,7 +293,9 @@ export function calculateGrandTotals(
   });
 
   // Get last month's flights
-  const lastMonthDate = new Date(currentYear, currentMonth - 2); // month is 1-indexed, so -2 for last month
+  const lastMonthDate = currentMonth === 1
+    ? new Date(currentYear - 1, 11) // January → go back to December of previous year
+    : new Date(currentYear, currentMonth - 2);
   const lastMonthFlights = allFlights.filter((flight) => {
     const date = new Date(flight.date);
     return (

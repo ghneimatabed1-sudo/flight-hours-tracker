@@ -1142,7 +1142,9 @@ export default function SettingsScreen() {
                             const m = parseInt(digits.slice(2,4), 10);
                             const y = parseInt(digits.slice(4,8), 10);
                             if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
-                              setTempInitialHours(prev => ({ ...prev, lastDayFlyingDate: new Date(y, m-1, d).toISOString().split("T")[0] }));
+                              const parsed = new Date(y, m-1, d);
+                              if (parsed.getDate() !== d || parsed.getMonth() !== m-1) return;
+                              setTempInitialHours(prev => ({ ...prev, lastDayFlyingDate: parsed.toISOString().split("T")[0] }));
                             }
                           }
                         }}
@@ -1173,7 +1175,9 @@ export default function SettingsScreen() {
                             const m = parseInt(digits.slice(2,4), 10);
                             const y = parseInt(digits.slice(4,8), 10);
                             if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
-                              setTempInitialHours(prev => ({ ...prev, lastNightFlyingDate: new Date(y, m-1, d).toISOString().split("T")[0] }));
+                              const parsed = new Date(y, m-1, d);
+                              if (parsed.getDate() !== d || parsed.getMonth() !== m-1) return;
+                              setTempInitialHours(prev => ({ ...prev, lastNightFlyingDate: parsed.toISOString().split("T")[0] }));
                             }
                           }
                         }}
@@ -1204,7 +1208,9 @@ export default function SettingsScreen() {
                             const m = parseInt(digits.slice(2,4), 10);
                             const y = parseInt(digits.slice(4,8), 10);
                             if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
-                              setTempInitialHours(prev => ({ ...prev, lastNVGFlyingDate: new Date(y, m-1, d).toISOString().split("T")[0] }));
+                              const parsed = new Date(y, m-1, d);
+                              if (parsed.getDate() !== d || parsed.getMonth() !== m-1) return;
+                              setTempInitialHours(prev => ({ ...prev, lastNVGFlyingDate: parsed.toISOString().split("T")[0] }));
                             }
                           }
                         }}

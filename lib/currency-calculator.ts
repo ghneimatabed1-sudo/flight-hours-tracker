@@ -93,7 +93,7 @@ export function calculateCurrencyStatus(
       case "nvg":
         return flight.nvg === true && flight.condition === "night";
       case "irt":
-        return flight.mission.toUpperCase() === "IRT" && flight.instrumentFlight;
+        return flight.mission?.toUpperCase() === "IRT" && flight.instrumentFlight;
       default:
         return false;
     }

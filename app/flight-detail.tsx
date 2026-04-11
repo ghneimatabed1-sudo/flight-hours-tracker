@@ -230,7 +230,10 @@ export default function FlightDetailScreen() {
                     const m = parseInt(digits.slice(2,4), 10);
                     const y = parseInt(digits.slice(4,8), 10);
                     if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
-                      setDate(new Date(y, m-1, d).toISOString().split("T")[0]);
+                      const parsed = new Date(y, m-1, d);
+                      if (parsed.getDate() === d && parsed.getMonth() === m-1) {
+                        setDate(parsed.toISOString().split("T")[0]);
+                      }
                     }
                   }
                 }}
