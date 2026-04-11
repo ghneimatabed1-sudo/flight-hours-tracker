@@ -54,7 +54,23 @@ export async function loadSettings(): Promise<AppSettings> {
         dayCurrencyRefreshMode: "day_flight_only",
       };
     }
-    return JSON.parse(data);
+    const stored = JSON.parse(data);
+    // Merge stored currencies with defaults to handle missing fields from older versions
+    stored.currencies = DEFAULT_CURRENCIES.map((def) => {
+      const found = (stored.currencies as Currency[] | undefined)?.find(
+        (c) => c.type === def.type
+      );
+      if (!found) return def;
+      const merged = { ...def, ...found };
+      // Migration: flight-based currencies (day/night/nvg) should never have validityDays=365.
+      // If stored value is 365, it's a stale old default — reset it to the current default.
+      const flightBased = ["day", "night", "nvg"];
+      if (flightBased.includes(def.type) && merged.validityDays === 365) {
+        merged.validityDays = def.validityDays;
+      }
+      return merged;
+    });
+    return stored;
   } catch (error) {
     console.error("Failed to load settings:", error);
     return {
