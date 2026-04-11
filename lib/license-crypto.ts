@@ -44,11 +44,14 @@ export function verifyLicenseKey(licenseKey: string): LicenseKeyData | null {
   try {
     if (!licenseKey.startsWith("FHT-")) return null;
     const withoutPrefix = licenseKey.slice(4); // remove "FHT-"
-    const lastDash = withoutPrefix.lastIndexOf("-");
-    if (lastDash === -1) return null;
-
-    const payloadEncoded = withoutPrefix.slice(0, lastDash);
-    const signatureProvided = withoutPrefix.slice(lastDash + 1);
+    // FIXED: Signature is always exactly 16 hex characters.
+    // Using lastIndexOf("-") was unreliable because the Base64-encoded payload
+    // can contain hyphens (from URL-safe Base64 encoding of ISO date strings).
+    // Instead, we extract the last 16 chars as the signature and everything
+    // before the last 17 chars (16 sig + 1 dash separator) as the payload.
+    if (withoutPrefix.length < 18) return null;
+    const signatureProvided = withoutPrefix.slice(-16);
+    const payloadEncoded = withoutPrefix.slice(0, -17);
     const payload = base64Decode(payloadEncoded);
     const parts = payload.split("|");
     if (parts.length !== 3) return null;
