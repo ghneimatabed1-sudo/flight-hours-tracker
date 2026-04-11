@@ -10,7 +10,7 @@ import {
   Modal,
   Switch,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "expo-router";
 import { useThemeContext } from "@/lib/theme-provider";
 import { useColors } from "@/hooks/use-colors";
@@ -99,7 +99,10 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleUpdateCurrency = (index: number, field: "validityDays" | "reminderDays", value: string) => {
+  // Debounce timer ref — auto-saves 600ms after the user stops typing
+  const currencyAutoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleUpdateCurrency = useCallback((index: number, field: "validityDays" | "reminderDays", value: string) => {
     const newCurrencies = [...currencies];
     const numValue = parseInt(value) || 0;
     newCurrencies[index] = {
@@ -107,7 +110,16 @@ export default function SettingsScreen() {
       [field]: numValue,
     };
     setCurrencies(newCurrencies);
-  };
+    // Auto-save after 600ms of inactivity so every keystroke doesn't spam storage
+    if (currencyAutoSaveTimer.current) clearTimeout(currencyAutoSaveTimer.current);
+    currencyAutoSaveTimer.current = setTimeout(async () => {
+      try {
+        await updateCurrencies(newCurrencies);
+      } catch (error) {
+        console.error("Failed to auto-save currency settings:", error);
+      }
+    }, 600);
+  }, [currencies, updateCurrencies]);
 
   const handleToggleCurrencyVisibility = async (index: number) => {
     const newCurrencies = [...currencies];
