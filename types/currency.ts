@@ -13,6 +13,7 @@ export interface Currency {
   expirationDate?: string; // Auto-calculated
   daysRemaining?: number; // Auto-calculated
   status: "current" | "expiring_soon" | "expired"; // Auto-calculated
+  hidden?: boolean; // Hide from home screen (still tracked & notified)
 }
 
 export interface CurrencySettings {

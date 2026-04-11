@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Platform,
   Modal,
+  Switch,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
@@ -104,6 +105,15 @@ export default function SettingsScreen() {
     newCurrencies[index] = {
       ...newCurrencies[index],
       [field]: numValue,
+    };
+    setCurrencies(newCurrencies);
+  };
+
+  const handleToggleCurrencyVisibility = (index: number) => {
+    const newCurrencies = [...currencies];
+    newCurrencies[index] = {
+      ...newCurrencies[index],
+      hidden: !newCurrencies[index].hidden,
     };
     setCurrencies(newCurrencies);
   };
@@ -675,9 +685,22 @@ export default function SettingsScreen() {
               const isDateBased = currency.type === "medical" || currency.type === "irt";
               return (
                 <View key={currency.type} className="mb-5 pb-5 border-b border-border last:border-b-0">
-                  <Text className="text-base font-semibold text-foreground mb-3">
-                    {getCurrencyLabel(currency.type)}
-                  </Text>
+                  <View className="flex-row justify-between items-center mb-3">
+                    <Text className="text-base font-semibold text-foreground">
+                      {getCurrencyLabel(currency.type)}
+                    </Text>
+                    <View className="flex-row items-center gap-2">
+                      <Text className="text-xs text-muted">
+                        {currency.hidden ? "Hidden" : "Visible"}
+                      </Text>
+                      <Switch
+                        value={!currency.hidden}
+                        onValueChange={() => handleToggleCurrencyVisibility(index)}
+                        trackColor={{ false: colors.muted, true: colors.primary }}
+                        thumbColor="#ffffff"
+                      />
+                    </View>
+                  </View>
 
                   <View className="gap-3">
                     {isDateBased ? (

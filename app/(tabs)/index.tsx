@@ -105,7 +105,9 @@ export default function HomeScreen() {
 
           {/* Currency Cards */}
           <View className="gap-4">
-            {currencyStatuses.map((currency) => (
+            {currencyStatuses
+              .filter(c => !settings.currencies.find(s => s.type === c.type)?.hidden)
+              .map((currency) => (
               <View
                 key={currency.type}
                 className="bg-surface rounded-2xl p-5 border border-border"
