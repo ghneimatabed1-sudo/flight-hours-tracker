@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js';
 import { encode as base64EncodeLib, decode as base64DecodeLib } from 'base-64';
 
-const _k = "FHT_SECRET_2026_CHANGE_THIS_TO_YOUR_OWN_RANDOM_STRING_12345";
+const _k = "Xv8$rK2!mP9qL4@nZ7^wA3#hB6&jD1*fE5+gC0~yU";
 
 function hmacSha256(message: string, key: string): string {
   const hmac = CryptoJS.HmacSHA256(message, key);
