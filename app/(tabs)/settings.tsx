@@ -47,6 +47,7 @@ export default function SettingsScreen() {
     daysRemaining: number;
     username?: string;
     expirationDate?: string;
+    effectiveExpiryDate?: string;
   } | null>(null);
   const [showRenewModal, setShowRenewModal] = useState(false);
   const [newLicenseKey, setNewLicenseKey] = useState("");
@@ -82,6 +83,7 @@ export default function SettingsScreen() {
         daysRemaining: status.daysRemaining,
         username: status.data?.username,
         expirationDate: status.data?.expirationDate,
+        effectiveExpiryDate: status.effectiveExpiryDate,
       });
     };
     fetchLicenseStatus();
@@ -348,12 +350,18 @@ export default function SettingsScreen() {
         daysRemaining: status.daysRemaining,
         username: status.data?.username,
         expirationDate: status.data?.expirationDate,
+        effectiveExpiryDate: status.effectiveExpiryDate,
       });
 
       // Show success message
+      const renewedStatus = await checkLicenseStatus();
+      const displayExpiry = renewedStatus.effectiveExpiryDate
+        ? new Date(renewedStatus.effectiveExpiryDate).toLocaleDateString()
+        : new Date(licenseData.expirationDate).toLocaleDateString();
+
       Alert.alert(
         "License Renewed",
-        `Your license has been successfully renewed!\n\nNew expiration date: ${new Date(licenseData.expirationDate).toLocaleDateString()}`,
+        `Your license has been successfully renewed!\n\nExpires on: ${displayExpiry}`,
         [
           {
             text: "OK",
@@ -483,12 +491,14 @@ export default function SettingsScreen() {
                   </View>
                 )}
 
-                {/* Expiration Date */}
-                {licenseStatus.expirationDate && (
+                {/* Expiration Date — shows effective (enforced) expiry */}
+                {(licenseStatus.effectiveExpiryDate || licenseStatus.expirationDate) && (
                   <View className="flex-row justify-between items-center">
                     <Text className="text-sm text-muted">Expires On</Text>
                     <Text className="text-sm font-semibold text-foreground">
-                      {new Date(licenseStatus.expirationDate).toLocaleDateString()}
+                      {new Date(
+                        licenseStatus.effectiveExpiryDate ?? licenseStatus.expirationDate!
+                      ).toLocaleDateString()}
                     </Text>
                   </View>
                 )}
@@ -565,6 +575,7 @@ export default function SettingsScreen() {
                             daysRemaining: status.daysRemaining,
                             username: status.data?.username,
                             expirationDate: status.data?.expirationDate,
+                            effectiveExpiryDate: status.effectiveExpiryDate,
                           });
                           Alert.alert("License Cleared", "Your license has been deleted. Please activate a new one.");
                         },
