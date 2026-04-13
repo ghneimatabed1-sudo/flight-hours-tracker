@@ -51,11 +51,16 @@ export function createEmptyTotals(): FlightTotals {
 
 /**
  * Classify a single flight and add its hours to the appropriate categories
- * 
- * NEW LOGIC:
- * 1. Flight Time goes to position (1st PLT or 2nd PLT)
- * 2. If position=1st_plt AND countsAsCaptain=true → also add to Captain Hours
- * 3. Dual Hours are independent and added separately
+ *
+ * RULES:
+ * 1. Day / Night / NVG are three completely separate buckets — NVG hours go
+ *    ONLY to NVG, NOT also to Night. Night (non-NVG) goes ONLY to Night.
+ * 2. Captain Hours: flight time (and dual hours) only go to captainTotal
+ *    when countsAsCaptain=true AND position=1st_plt.
+ *    2nd PLT can never count as captain.
+ * 3. Dual Hours are independent — they go into their own dual bucket
+ *    (dayDual / nightDual / nvgDual) based on the flight condition,
+ *    AND also follow the same countsAsCaptain rule for captain hours.
  * 4. Total = flightTime + dualHours
  */
 export function classifyFlight(flight: Flight, totals: FlightTotals): FlightTotals {
@@ -63,14 +68,11 @@ export function classifyFlight(flight: Flight, totals: FlightTotals): FlightTota
   const dual = flight.dualHours || 0;
   const newTotals = { ...totals };
 
-  // FLIGHT TIME CLASSIFICATION (based on position and condition)
+  // ── FLIGHT TIME CLASSIFICATION ──────────────────────────────────────────────
   if (flight.condition === "day") {
-    // Day flying
     if (flight.position === "1st_plt") {
       newTotals.day1stPlt += time;
       newTotals.firstPilotTotal += time;
-      
-      // If qualified as captain, add to captain hours
       if (flight.countsAsCaptain) {
         newTotals.captainTotal += time;
       }
@@ -79,16 +81,13 @@ export function classifyFlight(flight: Flight, totals: FlightTotals): FlightTota
       newTotals.secondPilotTotal += time;
     }
     newTotals.dayTotal += time;
-    
+
   } else if (flight.condition === "night") {
-    // Night flying
     if (flight.nvg) {
-      // NVG (Night Vision Goggles) - also counts as night flying
+      // ── NVG: goes ONLY to NVG bucket, NOT to night ──
       if (flight.position === "1st_plt") {
         newTotals.nvg1stPlt += time;
         newTotals.firstPilotTotal += time;
-        
-        // If qualified as captain, add to captain hours
         if (flight.countsAsCaptain) {
           newTotals.captainTotal += time;
         }
@@ -97,14 +96,12 @@ export function classifyFlight(flight: Flight, totals: FlightTotals): FlightTota
         newTotals.secondPilotTotal += time;
       }
       newTotals.nvgTotal += time;
-      newTotals.nightTotal += time; // NVG is a type of night flying
+      // nightTotal is NOT incremented — NVG and Night are separate categories
     } else {
-      // Night (non-NVG)
+      // ── Night (non-NVG): goes ONLY to night bucket, NOT to NVG ──
       if (flight.position === "1st_plt") {
         newTotals.night1stPlt += time;
         newTotals.firstPilotTotal += time;
-        
-        // If qualified as captain, add to captain hours
         if (flight.countsAsCaptain) {
           newTotals.captainTotal += time;
         }
@@ -117,25 +114,31 @@ export function classifyFlight(flight: Flight, totals: FlightTotals): FlightTota
     }
   }
 
-  // DUAL HOURS CLASSIFICATION (independent from position)
-  // NEW LOGIC: All Dual Hours also count as Captain Hours
+  // ── DUAL HOURS CLASSIFICATION ───────────────────────────────────────────────
+  // Dual hours go into their own dual bucket (day/night/NVG based on condition).
+  // They follow the SAME countsAsCaptain rule — only added to captainTotal when
+  // countsAsCaptain=true. They are NOT automatically captain hours.
   if (dual > 0) {
     newTotals.dualTotal += dual;
-    newTotals.captainTotal += dual; // ✅ NEW: Dual hours count as Captain hours
-    
+
+    // Captain rule applies to dual hours the same way it applies to flight time
+    if (flight.countsAsCaptain) {
+      newTotals.captainTotal += dual;
+    }
+
     if (flight.condition === "day") {
-      newTotals.dayDual += dual; // Add to day dual column
+      newTotals.dayDual += dual;
       newTotals.dualDayHours += dual;
       newTotals.dayTotal += dual;
     } else if (flight.condition === "night") {
       if (flight.nvg) {
-        // NVG Dual - also counts as night flying
+        // NVG dual — goes ONLY to NVG, NOT to night
         newTotals.nvgDual += dual;
         newTotals.dualNVGHours += dual;
         newTotals.nvgTotal += dual;
-        newTotals.nightTotal += dual; // NVG dual is also night flying
+        // nightTotal is NOT incremented here either
       } else {
-        // Night Dual (non-NVG)
+        // Night dual (non-NVG)
         newTotals.nightDual += dual;
         newTotals.dualNightHours += dual;
         newTotals.nightTotal += dual;
