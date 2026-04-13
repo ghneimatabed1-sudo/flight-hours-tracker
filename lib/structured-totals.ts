@@ -15,7 +15,7 @@ export interface StructuredTotals {
   dayDual: number; // Day DUAL
   
   // Night Flying breakdown
-  nightHours: number; // Total Night (Non-NVG only)
+  nightHours: number; // Total Night (includes NVG hours)
   night1stPlt: number; // Night 1st PLT
   night2ndPlt: number; // Night 2nd PLT
   nightDual: number; // Night DUAL
