@@ -44,9 +44,14 @@ export default function AddFlightScreen() {
   const [ilsCount, setIlsCount] = useState("");
   const [vorCount, setVorCount] = useState("");
   const [saving, setSaving] = useState(false);
+  const [dateError, setDateError] = useState<string | null>(null);
 
   const handleSave = async () => {
     // Validate inputs
+    if (dateError) {
+      Alert.alert("Invalid Date", dateError);
+      return;
+    }
     if (!date || !aircraftType || !aircraftNumber || !captainName || !coPilotName) {
       Alert.alert("Missing Information", "Please fill in all required fields.");
       return;
@@ -100,6 +105,7 @@ export default function AddFlightScreen() {
 
       // Reset form
       setDate(new Date().toISOString().split("T")[0]);
+      setDateError(null);
       const t = new Date();
       setDateRaw(`${String(t.getDate()).padStart(2,"0")}/${String(t.getMonth()+1).padStart(2,"0")}/${t.getFullYear()}`);
       setAircraftType("UH-60M");
@@ -165,6 +171,7 @@ export default function AddFlightScreen() {
                   if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
                   else if (digits.length > 2) formatted = digits.slice(0,2) + "/" + digits.slice(2);
                   setDateRaw(formatted);
+                  setDateError(null);
                   // Update ISO date when complete
                   if (digits.length === 8) {
                     const d = parseInt(digits.slice(0,2), 10);
@@ -175,17 +182,24 @@ export default function AddFlightScreen() {
                       // Verify day didn't roll over (e.g. Feb 31 → Mar)
                       if (parsed.getDate() === d && parsed.getMonth() === m-1) {
                         setDate(parsed.toISOString().split("T")[0]);
+                      } else {
+                        setDateError(`${String(d).padStart(2,"0")}/${String(m).padStart(2,"0")} is not a valid date for month ${m}.`);
                       }
+                    } else {
+                      setDateError("Please enter a valid date (DD/MM/YYYY).");
                     }
                   }
                 }}
                 placeholder="DD/MM/YYYY"
-                className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
+                className={`bg-surface border rounded-lg px-4 py-3 text-foreground ${dateError ? "border-red-500" : "border-border"}`}
                 placeholderTextColor={colors.muted}
                 keyboardType="number-pad"
                 autoComplete="off"
                 autoCorrect={false}
               />
+              {dateError && (
+                <Text className="text-red-500 text-xs mt-1">{dateError}</Text>
+              )}
             </View>
 
             <View>
@@ -363,7 +377,7 @@ export default function AddFlightScreen() {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setPosition("2nd_plt")}
+                  onPress={() => { setPosition("2nd_plt"); setCountsAsCaptain(false); }}
                   className={`flex-1 py-3 rounded-lg border ${
                     position === "2nd_plt"
                       ? "bg-primary border-primary"
