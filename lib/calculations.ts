@@ -216,7 +216,8 @@ export function calculateTotals(flights: Flight[], initialHours?: InitialHours):
     totals.dualTotal += initialHours.dualDayHours + initialHours.dualNightHours + initialHours.dualNVGHours;
   }
   
-  return totals;
+  // Round all accumulated values to eliminate floating point drift
+  return roundAllTotals(totals);
 }
 
 /**
@@ -345,10 +346,10 @@ export function calculateCurrentYearFlights(flights: Flight[]): number {
 }
 
 /**
- * Round hours to one decimal place for display
+ * Round hours to avoid floating point accumulation errors (3 decimal places)
  */
 export function roundHours(hours: number): number {
-  return Math.round(hours * 10) / 10;
+  return Math.round(hours * 1000) / 1000;
 }
 
 /**
@@ -356,4 +357,15 @@ export function roundHours(hours: number): number {
  */
 export function formatHours(hours: number): string {
   return roundHours(hours).toFixed(1);
+}
+
+/**
+ * Round all numeric fields in a FlightTotals object to eliminate floating point accumulation errors.
+ */
+function roundAllTotals(totals: FlightTotals): FlightTotals {
+  const rounded: FlightTotals = {} as FlightTotals;
+  for (const key of Object.keys(totals) as (keyof FlightTotals)[]) {
+    (rounded as Record<string, number>)[key] = roundHours(totals[key]);
+  }
+  return rounded;
 }
