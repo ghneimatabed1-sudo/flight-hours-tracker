@@ -83,7 +83,7 @@ export function FlightProvider({ children }: { children: React.ReactNode }) {
 
   const addFlight = useCallback(async (input: FlightInput) => {
     const newFlight: Flight = {
-      id: `flight_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `flight_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
       ...input,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -113,24 +113,31 @@ export function FlightProvider({ children }: { children: React.ReactNode }) {
     return isIRTFlight;
   }, [flights, refreshFlights]);
 
+  // Filter out corrupted flights so they never affect totals or reports
+  const safeFlights = useCallback((): Flight[] => {
+    if (!integrityReport || integrityReport.corruptedFlights.length === 0) return flights;
+    const corruptedSet = new Set(integrityReport.corruptedFlights);
+    return flights.filter((f) => !corruptedSet.has(f.id));
+  }, [flights, integrityReport]);
+
   const getMonthlyReport = useCallback((year: number, month: number): MonthlyReport => {
-    return generateMonthlyReport(flights, year, month, initialHours);
-  }, [flights, initialHours]);
+    return generateMonthlyReport(safeFlights(), year, month, initialHours);
+  }, [safeFlights, initialHours]);
 
   const getCurrentMonthTotals = useCallback((): FlightTotals => {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth() + 1;
-    const report = generateMonthlyReport(flights, year, month, initialHours);
+    const report = generateMonthlyReport(safeFlights(), year, month, initialHours);
     return report.totals;
-  }, [flights, initialHours]);
+  }, [safeFlights, initialHours]);
 
   const getGrandTotals = useCallback((): GrandTotals => {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth() + 1;
-    return calculateGrandTotals(flights, year, month, initialHours);
-  }, [flights, initialHours]);
+    return calculateGrandTotals(safeFlights(), year, month, initialHours);
+  }, [safeFlights, initialHours]);
 
   const value: FlightContextValue = {
     flights,
