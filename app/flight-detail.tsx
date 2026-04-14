@@ -46,6 +46,7 @@ export default function FlightDetailScreen() {
   const [ilsCount, setIlsCount] = useState("");
   const [vorCount, setVorCount] = useState("");
   const [saving, setSaving] = useState(false);
+  const [dateError, setDateError] = useState<string | null>(null);
 
   
 
@@ -79,6 +80,10 @@ export default function FlightDetailScreen() {
 
   const handleSave = async () => {
     // Validate inputs
+    if (dateError) {
+      Alert.alert("Invalid Date", dateError);
+      return;
+    }
     if (!date || !aircraftType || !aircraftNumber || !captainName || !coPilotName) {
       Alert.alert("Missing Information", "Please fill in all required fields.");
       return;
@@ -219,32 +224,38 @@ export default function FlightDetailScreen() {
                 value={dateRaw}
                 onChangeText={(text) => {
                   const digits = text.replace(/\D/g, "").slice(0, 8);
-                  if (digits.length >= 2 && parseInt(digits.slice(0,2), 10) > 31) return;
-                  if (digits.length >= 4 && parseInt(digits.slice(2,4), 10) > 12) return;
                   let formatted = digits;
                   if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
                   else if (digits.length > 2) formatted = digits.slice(0,2) + "/" + digits.slice(2);
                   setDateRaw(formatted);
+                  setDateError(null);
                   if (digits.length === 8) {
                     const d = parseInt(digits.slice(0,2), 10);
                     const m = parseInt(digits.slice(2,4), 10);
                     const y = parseInt(digits.slice(4,8), 10);
-                    if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
+                    if (d >= 1 && d <= 31 && m >= 1 && m <= 12 && y > 1900) {
                       const parsed = new Date(y, m-1, d);
                       if (parsed.getDate() === d && parsed.getMonth() === m-1) {
                         setDate(parsed.toISOString().split("T")[0]);
+                      } else {
+                        setDateError(`${String(d).padStart(2,"0")}/${String(m).padStart(2,"0")} is not a valid date.`);
                       }
+                    } else {
+                      setDateError("Please enter a valid date (DD/MM/YYYY).");
                     }
                   }
                 }}
                 placeholder="DD/MM/YYYY"
                 keyboardType="number-pad"
-                className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
+                className={`bg-surface border rounded-lg px-4 py-3 text-foreground ${dateError ? "border-red-500" : "border-border"}`}
                 placeholderTextColor={colors.muted}
                 autoComplete="off"
                 autoCorrect={false}
                 autoCapitalize="none"
               />
+              {dateError && (
+                <Text className="text-red-500 text-xs mt-1">{dateError}</Text>
+              )}
             </View>
 
             <View>
@@ -422,7 +433,7 @@ export default function FlightDetailScreen() {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setPosition("2nd_plt")}
+                  onPress={() => { setPosition("2nd_plt"); setCountsAsCaptain(false); }}
                   className={`flex-1 py-3 rounded-lg border ${
                     position === "2nd_plt"
                       ? "bg-primary border-primary"
