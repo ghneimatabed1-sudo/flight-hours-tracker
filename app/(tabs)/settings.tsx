@@ -143,7 +143,7 @@ export default function SettingsScreen() {
     const newCurrencies = [...currencies];
     newCurrencies[index] = {
       ...newCurrencies[index],
-      testDate: `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`,
+      testDate: `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`,
     };
     setCurrencies(newCurrencies);
   };
