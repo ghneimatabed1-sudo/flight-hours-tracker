@@ -104,7 +104,7 @@ export default function AddFlightScreen() {
       }
 
       // Reset form
-      setDate(new Date().toISOString().split("T")[0]);
+      setDate((() => { const _t = new Date(); return `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,"0")}-${String(_t.getDate()).padStart(2,"0")}`; })());
       setDateError(null);
       const t = new Date();
       setDateRaw(`${String(t.getDate()).padStart(2,"0")}/${String(t.getMonth()+1).padStart(2,"0")}/${t.getFullYear()}`);
