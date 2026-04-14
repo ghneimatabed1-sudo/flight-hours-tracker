@@ -21,7 +21,7 @@ export default function AddFlightScreen() {
   const { addFlight } = useFlights();
   const colors = useColors();
 
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(() => { const _t = new Date(); return `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,"0")}-${String(_t.getDate()).padStart(2,"0")}`; });
   const [dateRaw, setDateRaw] = useState(() => {
     const t = new Date();
     return `${String(t.getDate()).padStart(2,"0")}/${String(t.getMonth()+1).padStart(2,"0")}/${t.getFullYear()}`;
@@ -177,7 +177,7 @@ export default function AddFlightScreen() {
                       const parsed = new Date(y, m-1, d);
                       // Verify day didn't roll over (e.g. Feb 31 → Mar)
                       if (parsed.getDate() === d && parsed.getMonth() === m-1) {
-                        setDate(parsed.toISOString().split("T")[0]);
+                        setDate(`${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`);
                       } else {
                         setDateError(`${String(d).padStart(2,"0")}/${String(m).padStart(2,"0")} is not a valid date for month ${m}.`);
                       }
