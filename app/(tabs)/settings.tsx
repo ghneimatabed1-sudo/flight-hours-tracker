@@ -1055,20 +1055,6 @@ export default function SettingsScreen() {
                     />
                   </View>
                   <View>
-                    <Text className="text-sm text-muted mb-1">1st PLT Hours</Text>
-                    <TextInput
-                      className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.captainHours)}
-                      onChangeText={(value) => handleUpdateInitialHour("captainHours", value)}
-                      keyboardType="decimal-pad"
-                      placeholder="0.0"
-                      placeholderTextColor={colors.muted}
-                autoComplete="off"
-                autoCorrect={false}
-                autoCapitalize="characters"
-                    />
-                  </View>
-                  <View>
                     <Text className="text-sm text-muted mb-1">2nd PLT Hours</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
