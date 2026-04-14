@@ -288,8 +288,8 @@ export default function SettingsScreen() {
   const handleCancelInitialHours = () => {
     setRawHoursText({});
     setTempInitialHours(initialHours);
-    setDayDateRaw(initialHours.lastDayFlyingDate ? (() => { const d = new Date(initialHours.lastDayFlyingDate!); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; })() : "");
-    setNightDateRaw(initialHours.lastNightFlyingDate ? (() => { const d = new Date(initialHours.lastNightFlyingDate!); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; })() : "");
+    setDayDateRaw(initialHours.lastDayFlyingDate ? (() => { const [_fy,_fm,_fd]=initialHours.lastDayFlyingDate!.split("-").map(Number); return `${String(_fd).padStart(2,"0")}/${String(_fm).padStart(2,"0")}/${_fy}`; })() : "");
+    setNightDateRaw(initialHours.lastNightFlyingDate ? (() => { const [_fy,_fm,_fd]=initialHours.lastNightFlyingDate!.split("-").map(Number); return `${String(_fd).padStart(2,"0")}/${String(_fm).padStart(2,"0")}/${_fy}`; })() : "");
     setEditingInitialHours(false);
   };
 
