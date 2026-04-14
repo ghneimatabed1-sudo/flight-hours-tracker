@@ -66,8 +66,8 @@ export default function SettingsScreen() {
   useEffect(() => {
     setTempInitialHours(initialHours);
     const fmt = (iso: string) => {
-      const d = new Date(iso);
-      return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
+      const [_y, _m, _day] = iso.split('T')[0].split('-').map(Number);
+      return `${String(_day).padStart(2,"0")}/${String(_m).padStart(2,"0")}/${_y}`;
     };
     setDayDateRaw(initialHours.lastDayFlyingDate ? fmt(initialHours.lastDayFlyingDate) : "");
     setNightDateRaw(initialHours.lastNightFlyingDate ? fmt(initialHours.lastNightFlyingDate) : "");
@@ -143,7 +143,7 @@ export default function SettingsScreen() {
     const newCurrencies = [...currencies];
     newCurrencies[index] = {
       ...newCurrencies[index],
-      testDate: date.toISOString(),
+      testDate: `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`,
     };
     setCurrencies(newCurrencies);
   };
@@ -233,8 +233,8 @@ export default function SettingsScreen() {
     const newDateInputs: {[key: number]: string} = {};
     currencies.forEach((currency, index) => {
       if (currency.testDate) {
-        const date = new Date(currency.testDate);
-        const day = String(date.getDate()).padStart(2, "0");
+        const [_cy, _cm, _cd] = currency.testDate.split('T')[0].split('-').map(Number);
+        const day = String(_cd).padStart(2, "0");
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const year = date.getFullYear();
         newDateInputs[index] = `${day}/${month}/${year}`;
