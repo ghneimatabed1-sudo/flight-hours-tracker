@@ -45,7 +45,7 @@ export function calculateCurrencyStatus(
 
     const testDate = new Date(currency.testDate);
     const expirationDate = new Date(testDate);
-    expirationDate.setDate(expirationDate.getDate() + 365); // Fixed 1-year validity
+    expirationDate.setDate(expirationDate.getDate() + (currency.validityDays || 365));
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
