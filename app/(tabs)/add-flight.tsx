@@ -162,10 +162,6 @@ export default function AddFlightScreen() {
                 onChangeText={(text) => {
                   // Strip non-digits
                   const digits = text.replace(/\D/g, "").slice(0, 8);
-                  // Block day > 31
-                  if (digits.length >= 2 && parseInt(digits.slice(0, 2), 10) > 31) return;
-                  // Block month > 12
-                  if (digits.length >= 4 && parseInt(digits.slice(2, 4), 10) > 12) return;
                   // Auto-insert slashes
                   let formatted = digits;
                   if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
@@ -177,7 +173,7 @@ export default function AddFlightScreen() {
                     const d = parseInt(digits.slice(0,2), 10);
                     const m = parseInt(digits.slice(2,4), 10);
                     const y = parseInt(digits.slice(4,8), 10);
-                    if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
+                    if (d >= 1 && d <= 31 && m >= 1 && m <= 12 && y > 1900) {
                       const parsed = new Date(y, m-1, d);
                       // Verify day didn't roll over (e.g. Feb 31 → Mar)
                       if (parsed.getDate() === d && parsed.getMonth() === m-1) {
