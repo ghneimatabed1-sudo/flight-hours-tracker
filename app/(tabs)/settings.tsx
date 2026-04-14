@@ -40,6 +40,7 @@ export default function SettingsScreen() {
   const [dayDateRaw, setDayDateRaw] = useState("");
   const [nightDateRaw, setNightDateRaw] = useState("");
   const [nvgDateRaw, setNvgDateRaw] = useState("");
+  const [rawHoursText, setRawHoursText] = useState<Record<string, string>>({});
   const [licenseStatus, setLicenseStatus] = useState<{
     valid: boolean;
     expired: boolean;
@@ -274,6 +275,7 @@ export default function SettingsScreen() {
     setSaving(true);
     try {
       await updateInitialHours(tempInitialHours);
+      setRawHoursText({});
       setEditingInitialHours(false);
       Alert.alert("Saved", "Initial hours updated successfully.");
     } catch (error) {
@@ -284,6 +286,7 @@ export default function SettingsScreen() {
   };
 
   const handleCancelInitialHours = () => {
+    setRawHoursText({});
     setTempInitialHours(initialHours);
     setDayDateRaw(initialHours.lastDayFlyingDate ? (() => { const d = new Date(initialHours.lastDayFlyingDate!); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; })() : "");
     setNightDateRaw(initialHours.lastNightFlyingDate ? (() => { const d = new Date(initialHours.lastNightFlyingDate!); return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; })() : "");
@@ -291,7 +294,10 @@ export default function SettingsScreen() {
   };
 
   const handleUpdateInitialHour = (field: keyof typeof initialHours, value: string) => {
-    const numValue = parseFloat(value) || 0;
+    // Allow digits and a single decimal point — preserve trailing dot/zero while typing
+    const sanitized = value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+    setRawHoursText(prev => ({ ...prev, [field as string]: sanitized }));
+    const numValue = parseFloat(sanitized) || 0;
     setTempInitialHours(prev => ({ ...prev, [field]: numValue }));
   };
 
@@ -962,7 +968,7 @@ export default function SettingsScreen() {
                 </View>
                 <TouchableOpacity
                   className="bg-primary py-3 rounded-lg mt-4"
-                  onPress={() => setEditingInitialHours(true)}
+                  onPress={() => { setRawHoursText({}); setEditingInitialHours(true); }}
                 >
                   <Text className="text-background text-center font-semibold">Edit Initial Hours</Text>
                 </TouchableOpacity>
@@ -974,7 +980,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">Total Flight Hours</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.totalHours)}
+                      value={rawHoursText["totalHours"] ?? String(tempInitialHours.totalHours)}
                       onChangeText={(value) => handleUpdateInitialHour("totalHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -988,7 +994,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">Day Hours</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.dayHours)}
+                      value={rawHoursText["dayHours"] ?? String(tempInitialHours.dayHours)}
                       onChangeText={(value) => handleUpdateInitialHour("dayHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1002,7 +1008,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">Night Hours</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.nightHours)}
+                      value={rawHoursText["nightHours"] ?? String(tempInitialHours.nightHours)}
                       onChangeText={(value) => handleUpdateInitialHour("nightHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1016,7 +1022,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">NVG Hours</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.nvgHours)}
+                      value={rawHoursText["nvgHours"] ?? String(tempInitialHours.nvgHours)}
                       onChangeText={(value) => handleUpdateInitialHour("nvgHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1030,7 +1036,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">Instrument Hours</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.instrumentHours)}
+                      value={rawHoursText["instrumentHours"] ?? String(tempInitialHours.instrumentHours)}
                       onChangeText={(value) => handleUpdateInitialHour("instrumentHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1044,7 +1050,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">CAP (Captain Hours)</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.captainHours)}
+                      value={rawHoursText["captainHours"] ?? String(tempInitialHours.captainHours)}
                       onChangeText={(value) => handleUpdateInitialHour("captainHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1058,7 +1064,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">2nd PLT Hours</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.copilotHours)}
+                      value={rawHoursText["copilotHours"] ?? String(tempInitialHours.copilotHours)}
                       onChangeText={(value) => handleUpdateInitialHour("copilotHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1072,7 +1078,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">Dual Day Hours</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.dualDayHours)}
+                      value={rawHoursText["dualDayHours"] ?? String(tempInitialHours.dualDayHours)}
                       onChangeText={(value) => handleUpdateInitialHour("dualDayHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1086,7 +1092,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">Dual Night Hours</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.dualNightHours)}
+                      value={rawHoursText["dualNightHours"] ?? String(tempInitialHours.dualNightHours)}
                       onChangeText={(value) => handleUpdateInitialHour("dualNightHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1100,7 +1106,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">Dual NVG Hours</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.dualNVGHours)}
+                      value={rawHoursText["dualNVGHours"] ?? String(tempInitialHours.dualNVGHours)}
                       onChangeText={(value) => handleUpdateInitialHour("dualNVGHours", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1114,7 +1120,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">Day 1st PLT</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.day1stPlt)}
+                      value={rawHoursText["day1stPlt"] ?? String(tempInitialHours.day1stPlt)}
                       onChangeText={(value) => handleUpdateInitialHour("day1stPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1128,7 +1134,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">Day 2nd PLT</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.day2ndPlt)}
+                      value={rawHoursText["day2ndPlt"] ?? String(tempInitialHours.day2ndPlt)}
                       onChangeText={(value) => handleUpdateInitialHour("day2ndPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1142,7 +1148,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">Night 1st PLT</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.night1stPlt)}
+                      value={rawHoursText["night1stPlt"] ?? String(tempInitialHours.night1stPlt)}
                       onChangeText={(value) => handleUpdateInitialHour("night1stPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1156,7 +1162,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">Night 2nd PLT</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.night2ndPlt)}
+                      value={rawHoursText["night2ndPlt"] ?? String(tempInitialHours.night2ndPlt)}
                       onChangeText={(value) => handleUpdateInitialHour("night2ndPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1170,7 +1176,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">NVG 1st PLT</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.nvg1stPlt)}
+                      value={rawHoursText["nvg1stPlt"] ?? String(tempInitialHours.nvg1stPlt)}
                       onChangeText={(value) => handleUpdateInitialHour("nvg1stPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
@@ -1184,7 +1190,7 @@ export default function SettingsScreen() {
                     <Text className="text-sm text-muted mb-1">NVG 2nd PLT</Text>
                     <TextInput
                       className="bg-background border border-border rounded-lg px-3 py-2 text-foreground"
-                      value={String(tempInitialHours.nvg2ndPlt)}
+                      value={rawHoursText["nvg2ndPlt"] ?? String(tempInitialHours.nvg2ndPlt)}
                       onChangeText={(value) => handleUpdateInitialHour("nvg2ndPlt", value)}
                       keyboardType="decimal-pad"
                       placeholder="0.0"
