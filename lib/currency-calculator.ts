@@ -22,6 +22,14 @@ export interface CurrencyStatus {
  * @param dayCurrencyRefreshMode - "day_flight_only" (any day flight) or "duration_half_hour" (day flights >= 0.5 hours only)
  * @param initialHours - Initial hours with baseline dates for currency calculations
  */
+
+// Parse a date string as LOCAL time (avoids UTC midnight timezone shifts)
+function parseLocalDate(dateStr: string): Date {
+  const datePart = dateStr.split('T')[0]; // handle both "YYYY-MM-DD" and full ISO
+  const [y, m, d] = datePart.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
 export function calculateCurrencyStatus(
   currency: Currency,
   flights: Flight[],
@@ -43,7 +51,7 @@ export function calculateCurrencyStatus(
       };
     }
 
-    const testDate = new Date(currency.testDate);
+    const testDate = parseLocalDate(currency.testDate);
     const expirationDate = new Date(testDate);
     expirationDate.setDate(expirationDate.getDate() + (currency.validityDays || 365));
 
@@ -105,20 +113,20 @@ export function calculateCurrencyStatus(
   if (relevantFlights.length > 0) {
     // Get the most recent logged flight
     const sortedFlights = relevantFlights.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      (a, b) => parseLocalDate(b.date).getTime() - parseLocalDate(a.date).getTime()
     );
-    lastFlightDate = new Date(sortedFlights[0].date);
+    lastFlightDate = parseLocalDate(sortedFlights[0].date);
   }
 
   // Also check initialHours baseline — use whichever is more recent
   if (initialHours) {
     let baselineDate: Date | null = null;
     if (currency.type === "day" && initialHours.lastDayFlyingDate) {
-      baselineDate = new Date(initialHours.lastDayFlyingDate);
+      baselineDate = parseLocalDate(initialHours.lastDayFlyingDate);
     } else if (currency.type === "night" && initialHours.lastNightFlyingDate) {
-      baselineDate = new Date(initialHours.lastNightFlyingDate);
+      baselineDate = parseLocalDate(initialHours.lastNightFlyingDate);
     } else if (currency.type === "nvg" && initialHours.lastNVGFlyingDate) {
-      baselineDate = new Date(initialHours.lastNVGFlyingDate);
+      baselineDate = parseLocalDate(initialHours.lastNVGFlyingDate);
     }
     if (baselineDate && (!lastFlightDate || baselineDate > lastFlightDate)) {
       lastFlightDate = baselineDate;
