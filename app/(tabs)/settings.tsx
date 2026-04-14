@@ -235,8 +235,8 @@ export default function SettingsScreen() {
       if (currency.testDate) {
         const [_cy, _cm, _cd] = currency.testDate.split('T')[0].split('-').map(Number);
         const day = String(_cd).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const year = date.getFullYear();
+        const month = String(_cm).padStart(2, "0");
+        const year = String(_cy);
         newDateInputs[index] = `${day}/${month}/${year}`;
       }
     });
