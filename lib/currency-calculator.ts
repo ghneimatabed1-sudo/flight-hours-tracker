@@ -146,9 +146,9 @@ export function calculateCurrencyStatus(
     (expirationDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  // Determine status
+  // Determine status (daysRemaining === 0 means today is the last valid day → EXPIRED)
   let status: "VALID" | "EXPIRING SOON" | "EXPIRED";
-  if (daysRemaining < 0) {
+  if (daysRemaining <= 0) {
     status = "EXPIRED";
   } else if (daysRemaining <= currency.reminderDays) {
     status = "EXPIRING SOON";
