@@ -1213,8 +1213,6 @@ export default function SettingsScreen() {
                         value={dayDateRaw}
                         onChangeText={(text) => {
                           const digits = text.replace(/\D/g, "").slice(0, 8);
-                          if (digits.length >= 2 && parseInt(digits.slice(0,2), 10) > 31) return;
-                          if (digits.length >= 4 && parseInt(digits.slice(2,4), 10) > 12) return;
                           let formatted = digits;
                           if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
                           else if (digits.length > 2) formatted = digits.slice(0,2) + "/" + digits.slice(2);
@@ -1225,7 +1223,7 @@ export default function SettingsScreen() {
                             const d = parseInt(digits.slice(0,2), 10);
                             const m = parseInt(digits.slice(2,4), 10);
                             const y = parseInt(digits.slice(4,8), 10);
-                            if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
+                            if (d >= 1 && d <= 31 && m >= 1 && m <= 12 && y > 1900) {
                               const parsed = new Date(y, m-1, d);
                               if (parsed.getDate() !== d || parsed.getMonth() !== m-1) return;
                               setTempInitialHours(prev => ({ ...prev, lastDayFlyingDate: parsed.toISOString().split("T")[0] }));
@@ -1246,8 +1244,6 @@ export default function SettingsScreen() {
                         value={nightDateRaw}
                         onChangeText={(text) => {
                           const digits = text.replace(/\D/g, "").slice(0, 8);
-                          if (digits.length >= 2 && parseInt(digits.slice(0,2), 10) > 31) return;
-                          if (digits.length >= 4 && parseInt(digits.slice(2,4), 10) > 12) return;
                           let formatted = digits;
                           if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
                           else if (digits.length > 2) formatted = digits.slice(0,2) + "/" + digits.slice(2);
@@ -1258,7 +1254,7 @@ export default function SettingsScreen() {
                             const d = parseInt(digits.slice(0,2), 10);
                             const m = parseInt(digits.slice(2,4), 10);
                             const y = parseInt(digits.slice(4,8), 10);
-                            if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
+                            if (d >= 1 && d <= 31 && m >= 1 && m <= 12 && y > 1900) {
                               const parsed = new Date(y, m-1, d);
                               if (parsed.getDate() !== d || parsed.getMonth() !== m-1) return;
                               setTempInitialHours(prev => ({ ...prev, lastNightFlyingDate: parsed.toISOString().split("T")[0] }));
@@ -1279,8 +1275,6 @@ export default function SettingsScreen() {
                         value={nvgDateRaw}
                         onChangeText={(text) => {
                           const digits = text.replace(/\D/g, "").slice(0, 8);
-                          if (digits.length >= 2 && parseInt(digits.slice(0,2), 10) > 31) return;
-                          if (digits.length >= 4 && parseInt(digits.slice(2,4), 10) > 12) return;
                           let formatted = digits;
                           if (digits.length > 4) formatted = digits.slice(0,2) + "/" + digits.slice(2,4) + "/" + digits.slice(4);
                           else if (digits.length > 2) formatted = digits.slice(0,2) + "/" + digits.slice(2);
@@ -1291,7 +1285,7 @@ export default function SettingsScreen() {
                             const d = parseInt(digits.slice(0,2), 10);
                             const m = parseInt(digits.slice(2,4), 10);
                             const y = parseInt(digits.slice(4,8), 10);
-                            if (d >= 1 && m >= 1 && m <= 12 && y > 1900) {
+                            if (d >= 1 && d <= 31 && m >= 1 && m <= 12 && y > 1900) {
                               const parsed = new Date(y, m-1, d);
                               if (parsed.getDate() !== d || parsed.getMonth() !== m-1) return;
                               setTempInitialHours(prev => ({ ...prev, lastNVGFlyingDate: parsed.toISOString().split("T")[0] }));
