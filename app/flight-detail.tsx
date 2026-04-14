@@ -138,7 +138,7 @@ export default function FlightDetailScreen() {
       }
 
       // Reset form
-      setDate(new Date().toISOString().split("T")[0]);
+      setDate((() => { const _t = new Date(); return `${_t.getFullYear()}-${String(_t.getMonth()+1).padStart(2,"0")}-${String(_t.getDate()).padStart(2,"0")}`; })());
       setAircraftType("UH-60M");
       setAircraftNumber("");
       setCaptainName("");
@@ -236,7 +236,7 @@ export default function FlightDetailScreen() {
                     if (d >= 1 && d <= 31 && m >= 1 && m <= 12 && y > 1900) {
                       const parsed = new Date(y, m-1, d);
                       if (parsed.getDate() === d && parsed.getMonth() === m-1) {
-                        setDate(parsed.toISOString().split("T")[0]);
+                        setDate(`${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`);
                       } else {
                         setDateError(`${String(d).padStart(2,"0")}/${String(m).padStart(2,"0")} is not a valid date.`);
                       }
