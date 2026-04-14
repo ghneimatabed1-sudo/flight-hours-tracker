@@ -55,7 +55,7 @@ export default function FlightDetailScreen() {
     if (foundFlight) {
       setFlight(foundFlight);
       setDate(foundFlight.date);
-      const _d = new Date(foundFlight.date);
+      const [_dy, _dm, _dd] = foundFlight.date.split('-').map(Number); const _d = new Date(_dy, _dm - 1, _dd);
       setDateRaw(`${String(_d.getDate()).padStart(2,"0")}/${String(_d.getMonth()+1).padStart(2,"0")}/${_d.getFullYear()}`);
       setAircraftType(foundFlight.aircraftType);
       setAircraftNumber(foundFlight.aircraftNumber);
