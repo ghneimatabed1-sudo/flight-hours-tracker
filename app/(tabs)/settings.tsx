@@ -1226,7 +1226,7 @@ export default function SettingsScreen() {
                             if (d >= 1 && d <= 31 && m >= 1 && m <= 12 && y > 1900) {
                               const parsed = new Date(y, m-1, d);
                               if (parsed.getDate() !== d || parsed.getMonth() !== m-1) return;
-                              setTempInitialHours(prev => ({ ...prev, lastDayFlyingDate: parsed.toISOString().split("T")[0] }));
+                              setTempInitialHours(prev => ({ ...prev, lastDayFlyingDate: `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}` }));
                             }
                           }
                         }}
@@ -1257,7 +1257,7 @@ export default function SettingsScreen() {
                             if (d >= 1 && d <= 31 && m >= 1 && m <= 12 && y > 1900) {
                               const parsed = new Date(y, m-1, d);
                               if (parsed.getDate() !== d || parsed.getMonth() !== m-1) return;
-                              setTempInitialHours(prev => ({ ...prev, lastNightFlyingDate: parsed.toISOString().split("T")[0] }));
+                              setTempInitialHours(prev => ({ ...prev, lastNightFlyingDate: `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}` }));
                             }
                           }
                         }}
@@ -1288,7 +1288,7 @@ export default function SettingsScreen() {
                             if (d >= 1 && d <= 31 && m >= 1 && m <= 12 && y > 1900) {
                               const parsed = new Date(y, m-1, d);
                               if (parsed.getDate() !== d || parsed.getMonth() !== m-1) return;
-                              setTempInitialHours(prev => ({ ...prev, lastNVGFlyingDate: parsed.toISOString().split("T")[0] }));
+                              setTempInitialHours(prev => ({ ...prev, lastNVGFlyingDate: `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}` }));
                             }
                           }
                         }}
