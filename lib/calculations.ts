@@ -207,6 +207,13 @@ export function calculateTotals(flights: Flight[], initialHours?: InitialHours):
     totals.night2ndPlt += initialHours.night2ndPlt;
     totals.nvg1stPlt += initialHours.nvg1stPlt;
     totals.nvg2ndPlt += initialHours.nvg2ndPlt;
+
+    // Roll sub-bucket initial hours into the overall pilot totals so that the
+    // displayed "1st PLT Total" and "2nd PLT Total" reflect historical hours.
+    totals.firstPilotTotal +=
+      initialHours.day1stPlt + initialHours.night1stPlt + initialHours.nvg1stPlt;
+    totals.secondPilotTotal +=
+      initialHours.day2ndPlt + initialHours.night2ndPlt + initialHours.nvg2ndPlt;
     
     // Add to Day DUAL
     totals.dayDual += initialHours.dualDayHours;
