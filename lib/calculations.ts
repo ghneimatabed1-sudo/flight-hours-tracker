@@ -181,6 +181,13 @@ export function classifyFlight(flight: Flight, totals: FlightTotals): FlightTota
  * @param flights - Array of flights to calculate
  * @param initialHours - Optional initial hours to add to totals (does not affect currency)
  */
+
+// Parse YYYY-MM-DD date strings as local time (avoids UTC midnight timezone shift)
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
 export function calculateTotals(flights: Flight[], initialHours?: InitialHours): FlightTotals {
   let totals = createEmptyTotals();
   for (const flight of flights) {
@@ -268,12 +275,12 @@ export function generateMonthlyReport(
 ): MonthlyReport {
   // Filter flights for the specified month
   const monthFlights = flights.filter((flight) => {
-    const date = new Date(flight.date);
+    const date = parseLocalDate(flight.date);
     return date.getFullYear() === year && date.getMonth() + 1 === month;
   });
 
   // Sort by date (newest first)
-  monthFlights.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  monthFlights.sort((a, b) => parseLocalDate(b.date).getTime() - parseLocalDate(a.date).getTime());
 
   return {
     year,
@@ -299,7 +306,7 @@ export function calculateGrandTotals(
 ): GrandTotals {
   // Get this month's flights
   const thisMonthFlights = allFlights.filter((flight) => {
-    const date = new Date(flight.date);
+    const date = parseLocalDate(flight.date);
     return date.getFullYear() === currentYear && date.getMonth() + 1 === currentMonth;
   });
 
@@ -308,7 +315,7 @@ export function calculateGrandTotals(
     ? new Date(currentYear - 1, 11) // January → go back to December of previous year
     : new Date(currentYear, currentMonth - 2);
   const lastMonthFlights = allFlights.filter((flight) => {
-    const date = new Date(flight.date);
+    const date = parseLocalDate(flight.date);
     return (
       date.getFullYear() === lastMonthDate.getFullYear() &&
       date.getMonth() === lastMonthDate.getMonth()
@@ -338,7 +345,7 @@ export function calculateLast6MonthsFlights(flights: Flight[]): number {
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
   
   return flights.filter((flight) => {
-    const flightDate = new Date(flight.date);
+    const flightDate = parseLocalDate(flight.date);
     return flightDate >= sixMonthsAgo;
   }).length;
 }
@@ -350,7 +357,7 @@ export function calculateCurrentYearFlights(flights: Flight[]): number {
   const currentYear = new Date().getFullYear();
   
   return flights.filter((flight) => {
-    const flightDate = new Date(flight.date);
+    const flightDate = parseLocalDate(flight.date);
     return flightDate.getFullYear() === currentYear;
   }).length;
 }
