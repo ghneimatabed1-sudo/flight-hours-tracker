@@ -86,7 +86,7 @@ export async function deleteFlight(id: string): Promise<void> {
 export async function getFlightsByMonth(year: number, month: number): Promise<Flight[]> {
   const flights = await loadFlights();
   return flights.filter((flight) => {
-    const date = new Date(flight.date);
+    const [_sy, _sm, _sd] = flight.date.split("-").map(Number); const date = new Date(_sy, _sm - 1, _sd);
     return date.getFullYear() === year && date.getMonth() + 1 === month;
   });
 }
